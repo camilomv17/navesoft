@@ -1,0 +1,505 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BA72C3B01C68F9B900D9CF3A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72C3AF1C68F9B900D9CF3A /* AppDelegate.swift */; };
+		BA72C3B21C68F9B900D9CF3A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72C3B11C68F9B900D9CF3A /* ViewController.swift */; };
+		BA72C3B51C68F9B900D9CF3A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA72C3B31C68F9B900D9CF3A /* Main.storyboard */; };
+		BA72C3B71C68F9B900D9CF3A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA72C3B61C68F9B900D9CF3A /* Assets.xcassets */; };
+		BA72C3BA1C68F9B900D9CF3A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA72C3B81C68F9B900D9CF3A /* LaunchScreen.storyboard */; };
+		BA72C3C51C68F9B900D9CF3A /* navesoftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72C3C41C68F9B900D9CF3A /* navesoftTests.swift */; };
+		BA72C3D01C68F9B900D9CF3A /* navesoftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72C3CF1C68F9B900D9CF3A /* navesoftUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BA72C3C11C68F9B900D9CF3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BA72C3A41C68F9B900D9CF3A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA72C3AB1C68F9B900D9CF3A;
+			remoteInfo = navesoft;
+		};
+		BA72C3CC1C68F9B900D9CF3A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BA72C3A41C68F9B900D9CF3A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA72C3AB1C68F9B900D9CF3A;
+			remoteInfo = navesoft;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		BA72C3AC1C68F9B900D9CF3A /* navesoft.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = navesoft.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA72C3AF1C68F9B900D9CF3A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BA72C3B11C68F9B900D9CF3A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BA72C3B41C68F9B900D9CF3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BA72C3B61C68F9B900D9CF3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BA72C3B91C68F9B900D9CF3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BA72C3BB1C68F9B900D9CF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA72C3C01C68F9B900D9CF3A /* navesoftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = navesoftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA72C3C41C68F9B900D9CF3A /* navesoftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = navesoftTests.swift; sourceTree = "<group>"; };
+		BA72C3C61C68F9B900D9CF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA72C3CB1C68F9B900D9CF3A /* navesoftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = navesoftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA72C3CF1C68F9B900D9CF3A /* navesoftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = navesoftUITests.swift; sourceTree = "<group>"; };
+		BA72C3D11C68F9B900D9CF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BA72C3A91C68F9B900D9CF3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA72C3BD1C68F9B900D9CF3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA72C3C81C68F9B900D9CF3A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BA72C3A31C68F9B900D9CF3A = {
+			isa = PBXGroup;
+			children = (
+				BA72C3AE1C68F9B900D9CF3A /* navesoft */,
+				BA72C3C31C68F9B900D9CF3A /* navesoftTests */,
+				BA72C3CE1C68F9B900D9CF3A /* navesoftUITests */,
+				BA72C3AD1C68F9B900D9CF3A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BA72C3AD1C68F9B900D9CF3A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BA72C3AC1C68F9B900D9CF3A /* navesoft.app */,
+				BA72C3C01C68F9B900D9CF3A /* navesoftTests.xctest */,
+				BA72C3CB1C68F9B900D9CF3A /* navesoftUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BA72C3AE1C68F9B900D9CF3A /* navesoft */ = {
+			isa = PBXGroup;
+			children = (
+				BA72C3AF1C68F9B900D9CF3A /* AppDelegate.swift */,
+				BA72C3B11C68F9B900D9CF3A /* ViewController.swift */,
+				BA72C3B31C68F9B900D9CF3A /* Main.storyboard */,
+				BA72C3B61C68F9B900D9CF3A /* Assets.xcassets */,
+				BA72C3B81C68F9B900D9CF3A /* LaunchScreen.storyboard */,
+				BA72C3BB1C68F9B900D9CF3A /* Info.plist */,
+			);
+			path = navesoft;
+			sourceTree = "<group>";
+		};
+		BA72C3C31C68F9B900D9CF3A /* navesoftTests */ = {
+			isa = PBXGroup;
+			children = (
+				BA72C3C41C68F9B900D9CF3A /* navesoftTests.swift */,
+				BA72C3C61C68F9B900D9CF3A /* Info.plist */,
+			);
+			path = navesoftTests;
+			sourceTree = "<group>";
+		};
+		BA72C3CE1C68F9B900D9CF3A /* navesoftUITests */ = {
+			isa = PBXGroup;
+			children = (
+				BA72C3CF1C68F9B900D9CF3A /* navesoftUITests.swift */,
+				BA72C3D11C68F9B900D9CF3A /* Info.plist */,
+			);
+			path = navesoftUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BA72C3AB1C68F9B900D9CF3A /* navesoft */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA72C3D41C68F9B900D9CF3A /* Build configuration list for PBXNativeTarget "navesoft" */;
+			buildPhases = (
+				BA72C3A81C68F9B900D9CF3A /* Sources */,
+				BA72C3A91C68F9B900D9CF3A /* Frameworks */,
+				BA72C3AA1C68F9B900D9CF3A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = navesoft;
+			productName = navesoft;
+			productReference = BA72C3AC1C68F9B900D9CF3A /* navesoft.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BA72C3BF1C68F9B900D9CF3A /* navesoftTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA72C3D71C68F9B900D9CF3A /* Build configuration list for PBXNativeTarget "navesoftTests" */;
+			buildPhases = (
+				BA72C3BC1C68F9B900D9CF3A /* Sources */,
+				BA72C3BD1C68F9B900D9CF3A /* Frameworks */,
+				BA72C3BE1C68F9B900D9CF3A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BA72C3C21C68F9B900D9CF3A /* PBXTargetDependency */,
+			);
+			name = navesoftTests;
+			productName = navesoftTests;
+			productReference = BA72C3C01C68F9B900D9CF3A /* navesoftTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BA72C3CA1C68F9B900D9CF3A /* navesoftUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA72C3DA1C68F9B900D9CF3A /* Build configuration list for PBXNativeTarget "navesoftUITests" */;
+			buildPhases = (
+				BA72C3C71C68F9B900D9CF3A /* Sources */,
+				BA72C3C81C68F9B900D9CF3A /* Frameworks */,
+				BA72C3C91C68F9B900D9CF3A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BA72C3CD1C68F9B900D9CF3A /* PBXTargetDependency */,
+			);
+			name = navesoftUITests;
+			productName = navesoftUITests;
+			productReference = BA72C3CB1C68F9B900D9CF3A /* navesoftUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BA72C3A41C68F9B900D9CF3A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0720;
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = "Camilo Mariño";
+				TargetAttributes = {
+					BA72C3AB1C68F9B900D9CF3A = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
+					BA72C3BF1C68F9B900D9CF3A = {
+						CreatedOnToolsVersion = 7.2.1;
+						TestTargetID = BA72C3AB1C68F9B900D9CF3A;
+					};
+					BA72C3CA1C68F9B900D9CF3A = {
+						CreatedOnToolsVersion = 7.2.1;
+						TestTargetID = BA72C3AB1C68F9B900D9CF3A;
+					};
+				};
+			};
+			buildConfigurationList = BA72C3A71C68F9B900D9CF3A /* Build configuration list for PBXProject "navesoft" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = BA72C3A31C68F9B900D9CF3A;
+			productRefGroup = BA72C3AD1C68F9B900D9CF3A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BA72C3AB1C68F9B900D9CF3A /* navesoft */,
+				BA72C3BF1C68F9B900D9CF3A /* navesoftTests */,
+				BA72C3CA1C68F9B900D9CF3A /* navesoftUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BA72C3AA1C68F9B900D9CF3A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA72C3BA1C68F9B900D9CF3A /* LaunchScreen.storyboard in Resources */,
+				BA72C3B71C68F9B900D9CF3A /* Assets.xcassets in Resources */,
+				BA72C3B51C68F9B900D9CF3A /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA72C3BE1C68F9B900D9CF3A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA72C3C91C68F9B900D9CF3A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BA72C3A81C68F9B900D9CF3A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA72C3B21C68F9B900D9CF3A /* ViewController.swift in Sources */,
+				BA72C3B01C68F9B900D9CF3A /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA72C3BC1C68F9B900D9CF3A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA72C3C51C68F9B900D9CF3A /* navesoftTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA72C3C71C68F9B900D9CF3A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA72C3D01C68F9B900D9CF3A /* navesoftUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BA72C3C21C68F9B900D9CF3A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA72C3AB1C68F9B900D9CF3A /* navesoft */;
+			targetProxy = BA72C3C11C68F9B900D9CF3A /* PBXContainerItemProxy */;
+		};
+		BA72C3CD1C68F9B900D9CF3A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA72C3AB1C68F9B900D9CF3A /* navesoft */;
+			targetProxy = BA72C3CC1C68F9B900D9CF3A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BA72C3B31C68F9B900D9CF3A /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BA72C3B41C68F9B900D9CF3A /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BA72C3B81C68F9B900D9CF3A /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BA72C3B91C68F9B900D9CF3A /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BA72C3D21C68F9B900D9CF3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BA72C3D31C68F9B900D9CF3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BA72C3D51C68F9B900D9CF3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = navesoft/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cm.navesoft;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BA72C3D61C68F9B900D9CF3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = navesoft/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cm.navesoft;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		BA72C3D81C68F9B900D9CF3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = navesoftTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cm.navesoftTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/navesoft.app/navesoft";
+			};
+			name = Debug;
+		};
+		BA72C3D91C68F9B900D9CF3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = navesoftTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cm.navesoftTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/navesoft.app/navesoft";
+			};
+			name = Release;
+		};
+		BA72C3DB1C68F9B900D9CF3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = navesoftUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cm.navesoftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = navesoft;
+				USES_XCTRUNNER = YES;
+			};
+			name = Debug;
+		};
+		BA72C3DC1C68F9B900D9CF3A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = navesoftUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cm.navesoftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = navesoft;
+				USES_XCTRUNNER = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BA72C3A71C68F9B900D9CF3A /* Build configuration list for PBXProject "navesoft" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA72C3D21C68F9B900D9CF3A /* Debug */,
+				BA72C3D31C68F9B900D9CF3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BA72C3D41C68F9B900D9CF3A /* Build configuration list for PBXNativeTarget "navesoft" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA72C3D51C68F9B900D9CF3A /* Debug */,
+				BA72C3D61C68F9B900D9CF3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		BA72C3D71C68F9B900D9CF3A /* Build configuration list for PBXNativeTarget "navesoftTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA72C3D81C68F9B900D9CF3A /* Debug */,
+				BA72C3D91C68F9B900D9CF3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		BA72C3DA1C68F9B900D9CF3A /* Build configuration list for PBXNativeTarget "navesoftUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA72C3DB1C68F9B900D9CF3A /* Debug */,
+				BA72C3DC1C68F9B900D9CF3A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BA72C3A41C68F9B900D9CF3A /* Project object */;
+}
