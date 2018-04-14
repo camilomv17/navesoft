@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BA72C3AB1C68F9B900D9CF3A"
-               BuildableName = "navesoft.app"
+               BuildableName = "AvizaT.app"
                BlueprintName = "navesoft"
                ReferencedContainer = "container:navesoft.xcodeproj">
             </BuildableReference>
@@ -53,7 +53,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BA72C3AB1C68F9B900D9CF3A"
-            BuildableName = "navesoft.app"
+            BuildableName = "AvizaT.app"
             BlueprintName = "navesoft"
             ReferencedContainer = "container:navesoft.xcodeproj">
          </BuildableReference>
@@ -76,7 +76,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BA72C3AB1C68F9B900D9CF3A"
-            BuildableName = "navesoft.app"
+            BuildableName = "AvizaT.app"
             BlueprintName = "navesoft"
             ReferencedContainer = "container:navesoft.xcodeproj">
          </BuildableReference>
@@ -95,7 +95,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BA72C3AB1C68F9B900D9CF3A"
-            BuildableName = "navesoft.app"
+            BuildableName = "AvizaT.app"
             BlueprintName = "navesoft"
             ReferencedContainer = "container:navesoft.xcodeproj">
          </BuildableReference>

@@ -1,0 +1,21 @@
+PODS:
+  - AEXML (3.0.0)
+  - GoogleMaps (1.11.1)
+  - JSQMessagesViewController (7.2.0):
+    - JSQSystemSoundPlayer (~> 2.0.1)
+  - JSQSystemSoundPlayer (2.0.1)
+
+DEPENDENCIES:
+  - AEXML (~> 3.0.0)
+  - GoogleMaps
+  - JSQMessagesViewController
+
+SPEC CHECKSUMS:
+  AEXML: 716fb0a8decba4a3517324a71fee3685b30233d2
+  GoogleMaps: c947160008f414c66707a5ea60f35e92055c7670
+  JSQMessagesViewController: 73cab48aa92fc2d512f3b6724f3425cc47a19eb5
+  JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
+
+PODFILE CHECKSUM: b75e09131810dfc6f2ac12597e07884b29776150
+
+COCOAPODS: 1.2.0.beta.1

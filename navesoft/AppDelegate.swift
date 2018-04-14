@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import GoogleMaps
+import AudioToolbox
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +19,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        GMSServices.provideAPIKey("AIzaSyD7nFWXuovcWjLcYFdoVmE8hGx_b2AWEzI")
+        self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        if(Brain.sharedBrain().currentUser != nil){
+            let mainViewController = UINavigationController(rootViewController: MainViewController())
+            self.window?.rootViewController = mainViewController;
+        }
+        else{
+            let mainViewController = UINavigationController(rootViewController: SelectViewController())
+            self.window?.rootViewController = mainViewController;
+        }
+        
+        self.window?.autoresizingMask = UIViewAutoresizing.FlexibleHeight;
+        self.window?.autoresizesSubviews = true;
+        self.window?.makeKeyAndVisible()
+        
+        let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
+        application.registerUserNotificationSettings(settings)
+        application.registerForRemoteNotifications()
+        
         return true
+    }
+    
+    func finishLogin(){
+        let controller = UINavigationController(rootViewController: MainViewController())
+        self.window?.rootViewController = controller
+    }
+    
+    func signOut(){
+        let controller = UINavigationController(rootViewController: RegisterViewController())
+        self.window?.rootViewController = controller
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -40,6 +72,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        
+        let deviceTokenString = (NSString(format: "%@", deviceToken) as String).stringByReplacingOccurrencesOfString("<", withString: "").stringByReplacingOccurrencesOfString(">", withString: "").stringByReplacingOccurrencesOfString(" ", withString: "")
+        NSLog("%@",deviceTokenString)
+        
+        let preferences = NSUserDefaults.standardUserDefaults()
+
+        let currentLevelKey = "token"
+        
+        preferences.setObject(deviceTokenString, forKey: currentLevelKey)
+        
+        //  Save to disk
+        let didSave = preferences.synchronize()
+        
+        if !didSave {
+            //  Couldn't save (I've never seen this happen in real world testing)
+        }
+        
+        
+    }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        application.applicationIconBadgeNumber = 0;
+
+        if(application.applicationState == .Active){
+            NSNotificationCenter.defaultCenter().postNotificationName("newMessage", object: Brain.sharedBrain(), userInfo: nil)
+            //let banner = Banner(title: "Alerta", subtitle: "Tienes un nuevo mensaje.", image: UIImage(named: "Icon"), backgroundColor: BLUE_COLOR)
+         //   banner.dismissesOnTap = true
+           // banner.show(duration: 3.0)
+            AudioServicesPlaySystemSound(1007)
+            
+        }
+    }
+    
+    
+    
+    
+  
 
 
 }
