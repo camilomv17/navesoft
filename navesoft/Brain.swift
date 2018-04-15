@@ -10,6 +10,30 @@ import Foundation
 import UIKit
 import GoogleMaps
 import JSQMessagesViewController
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 let BLUE_COLOR = UIColor(red:(0/255),green:(50/255),blue:(125/255),alpha:1.0)
 let ULTRA_LIGHT_GRAY_COLOR = UIColor(red:(235/255),green:(235/255),blue:(235/255),alpha:1.0)
@@ -31,8 +55,8 @@ class Brain:NSObject{
         
         currentUser = DataManager.getSharedInstance()?.user
         currentEvent = DataManager.getSharedInstance()?.event
-        serverIp = NSUserDefaults.standardUserDefaults().objectForKey("serverIp") as? String
-        serverCode = NSUserDefaults.standardUserDefaults().objectForKey("serverCode") as? String;
+        serverIp = UserDefaults.standard.object(forKey: "serverIp") as? String
+        serverCode = UserDefaults.standard.object(forKey: "serverCode") as? String;
 
         messagesQueue = NSMutableArray()
         isSendingMessage = false
@@ -47,7 +71,7 @@ class Brain:NSObject{
     }
     
     static func isIphone4()->Bool{
-        let cs = UIScreen.mainScreen().bounds
+        let cs = UIScreen.main.bounds
         if(cs.height==480){
             return true
         }
@@ -60,12 +84,12 @@ class Brain:NSObject{
         
         DataManager.getSharedInstance()?.save();
         
-        let preferences = NSUserDefaults.standardUserDefaults()
+        let preferences = UserDefaults.standard
         
         let currentLevelKey = "serverIp"
         
-        preferences.setObject(serverIp, forKey: currentLevelKey)
-        preferences.setObject(serverCode, forKey: "serverCode");
+        preferences.set(serverIp, forKey: currentLevelKey)
+        preferences.set(serverCode, forKey: "serverCode");
         
         //  Save to disk
         let didSave = preferences.synchronize()
@@ -76,8 +100,8 @@ class Brain:NSObject{
 
     }
     
-    static func isValidContainer(container:String) -> Bool{
-        let _c = container.uppercaseString
+    static func isValidContainer(_ container:String) -> Bool{
+        let _c = container.uppercased()
         if(_c.characters.count != 11){
             return false;
         }
@@ -110,23 +134,23 @@ class Brain:NSObject{
         verDict.setValue(37, forKey: "Y")
         verDict.setValue(38, forKey: "Z")
         
-        let letters = NSCharacterSet.letterCharacterSet()
-        let digits = NSCharacterSet.decimalDigitCharacterSet()
+        let letters = CharacterSet.letters
+        let digits = CharacterSet.decimalDigits
         var idx = 0
         var sum = 0.0
         var verification = ""
         for character in _c.unicodeScalars{
             
             if(idx<=3){
-                if !letters.longCharacterIsMember(character.value){
+                if !letters.contains(UnicodeScalar(character.value)!){
                     return false;
                 }
                 else{
-                    sum = sum + ((verDict.objectForKey(String(character)) as? Double)! * pow(2, Double(idx)))
+                    sum = sum + ((verDict.object(forKey: String(character)) as? Double)! * pow(2, Double(idx)))
                 }
             }
             else{
-                if !digits.longCharacterIsMember(character.value){
+                if !digits.contains(UnicodeScalar(character.value)!){
                     return false;
                 }
                 else{
@@ -159,7 +183,7 @@ class Brain:NSObject{
         
     }
     
-    func addMessageToQueue(message:JSQMessage){
+    func addMessageToQueue(_ message:JSQMessage){
         messagesQueue?.addObject(message)
         startSendingMessages()
     }
@@ -177,38 +201,38 @@ class Brain:NSObject{
         let next:JSQMessage = (messagesQueue?.objectAtIndex(0))! as! JSQMessage
         
         
-        let request = NSMutableURLRequest(URL: NSURL(string: "\(SERVER_IP)/api/call/sendMessage")!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: "\(SERVER_IP)/api/call/sendMessage")!)
+        request.httpMethod = "POST"
         let postString = "id=\((currentUser?.id)!)&message=\(next.text!)&eventId=\((currentEvent?._id)!)"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
+        let data = postString.dataUsingEncoding(String.Encoding.utf8)
         let length = CUnsignedLong((data?.length)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.HTTPBody = data
 
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 return
             }
             
-            if let httpStatus = response as? NSHTTPURLResponse  where httpStatus.statusCode != 200 {           // check for http errors
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
             print("responseString = \(responseString)")
             
             var error:NSError?
             do{
-                let json = try NSJSONSerialization.JSONObjectWithData(data!, options:NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
                 
-                if(json.objectForKey("status") as? String == "OK"){
-                    self.messagesQueue?.removeObjectAtIndex(0)
+                if(json.object(forKey: "status") as? String == "OK"){
+                    self.messagesQueue?.removeObject(at: 0)
                     
-                    NSNotificationCenter.defaultCenter().postNotificationName("messageSent", object: self)
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "messageSent"), object: self)
                     if(self.messagesQueue?.count>0){
                         self.sendNextMessage()
                     }
@@ -217,7 +241,7 @@ class Brain:NSObject{
                     }
                 }
                 
-                dispatch_async(dispatch_get_main_queue(),{
+                DispatchQueue.main.async(execute: {
                 
                 });
                 
@@ -226,7 +250,7 @@ class Brain:NSObject{
             catch{
                 print("FFUUUUUU")
             }
-        }
+        }) 
         task.resume()
     }
 }

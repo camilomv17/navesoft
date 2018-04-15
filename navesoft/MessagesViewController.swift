@@ -17,7 +17,7 @@ class MessagesViewController:JSQMessagesViewController{
 
     var firstFetch:Bool?
     
-    var timer:NSTimer?
+    var timer:Timer?
     
     var lastCheck:Double?
     var isRequestingMessages:Bool?
@@ -35,21 +35,21 @@ class MessagesViewController:JSQMessagesViewController{
     
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
    
-        SwiftSpinner.setTitleFont(UIFont.systemFontOfSize(15))
+        SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
         SwiftSpinner.show("Conectando...")
-        let request = NSMutableURLRequest(URL: NSURL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getMessages")!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getMessages")!)
+        request.httpMethod = "POST"
         let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&eventId=\((Brain.sharedBrain().currentEvent?._id)!)"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
-        let length = CUnsignedLong((data?.length)!)
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-        request.HTTPBody = data
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        request.httpBody = data
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
@@ -57,35 +57,35 @@ class MessagesViewController:JSQMessagesViewController{
                 return
             }
             
-            if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
             print("responseString = \(responseString)")
             
             var error:NSError?
             let newData = NSMutableArray()
             do{
-                let json = try NSJSONSerialization.JSONObjectWithData(data!, options:NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
                 
-                let messages = json.objectForKey("messages") as! NSArray
+                let messages = json.object(forKey: "messages") as! NSArray
                 for element in messages {
                     let dict = element as! NSDictionary
-                    let message = dict.objectForKey("mensaje") as! String
-                    let isPatio = dict.objectForKey("isPatio") as! Bool
-                    let time = ( dict.objectForKey("milliseconds") as! NSNumber).longLongValue
+                    let message = dict.object(forKey: "mensaje") as! String
+                    let isPatio = dict.object(forKey: "isPatio") as! Bool
+                    let time = ( dict.object(forKey: "milliseconds") as! NSNumber).int64Value
                     
                     
                     if(isPatio){
                         
-                        let d = NSDate(timeIntervalSince1970: (Double(time/1000)))
+                        let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: "OTHER", senderDisplayName: "ADMIN", date: d, text: message)
                         newData.insertObject(message, atIndex: 0)
                     }
                     else{
-                        let d = NSDate(timeIntervalSince1970: (Double(time/1000)))
+                        let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: self.senderId, senderDisplayName: self.senderDisplayName, date: d, text: message)
                         
                         newData.insertObject(message, atIndex: 0)
@@ -93,12 +93,12 @@ class MessagesViewController:JSQMessagesViewController{
                     
 
                 }
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
 
                 self.messages = NSArray(array:newData) as! [JSQMessage]
                     self.finishSendingMessage()
                     self.firstFetch = true
-                    self.lastCheck = NSDate().timeIntervalSince1970
+                    self.lastCheck = Date().timeIntervalSince1970
                 });
                 
                 SwiftSpinner.hide()
@@ -107,19 +107,19 @@ class MessagesViewController:JSQMessagesViewController{
             catch{
                 print("FFUUUUUU")
             }
-        }
+        }) 
         task.resume()
         
-        timer = NSTimer.scheduledTimerWithTimeInterval(15, target: self, selector: #selector(MessagesViewController.getNewMessages), userInfo: nil, repeats: false)
+        timer = Timer.scheduledTimer(timeInterval: 15, target: self, selector: #selector(MessagesViewController.getNewMessages), userInfo: nil, repeats: false)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MessagesViewController.getNewMessages), name: "newMessage", object: Brain.sharedBrain())
+        NotificationCenter.default.addObserver(self, selector: #selector(MessagesViewController.getNewMessages), name: NSNotification.Name(rawValue: "newMessage"), object: Brain.sharedBrain())
         
         
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         timer?.invalidate()
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "newMessage", object: Brain.sharedBrain())
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "newMessage"), object: Brain.sharedBrain())
     }
     
     func getNewMessages(){
@@ -129,15 +129,15 @@ class MessagesViewController:JSQMessagesViewController{
         }
         
         isRequestingMessages = true
-        let request = NSMutableURLRequest(URL: NSURL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getNewMessages")!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getNewMessages")!)
+        request.httpMethod = "POST"
         let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&eventId=\((Brain.sharedBrain().currentEvent?._id)!)&time=\((lastCheck!*1000))"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
-        let length = CUnsignedLong((data?.length)!)
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-        request.HTTPBody = data
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        request.httpBody = data
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
@@ -145,36 +145,36 @@ class MessagesViewController:JSQMessagesViewController{
                 return
             }
             
-            if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
             print("responseString = \(responseString)")
             
             var error:NSError?
             let newData = NSMutableArray(array: self.messages)
             var shouldPlaySound = false
             do{
-                let json = try NSJSONSerialization.JSONObjectWithData(data!, options:NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
                 
-                let messages = json.objectForKey("messages") as! NSArray
+                let messages = json.object(forKey: "messages") as! NSArray
                 for element in messages {
                     let dict = element as! NSDictionary
-                    let message = dict.objectForKey("mensaje") as! String
-                    let isPatio = dict.objectForKey("isPatio") as! Bool
-                    let time = ( dict.objectForKey("milliseconds") as! NSNumber).longLongValue
+                    let message = dict.object(forKey: "mensaje") as! String
+                    let isPatio = dict.object(forKey: "isPatio") as! Bool
+                    let time = ( dict.object(forKey: "milliseconds") as! NSNumber).int64Value
                     shouldPlaySound = true
                     
                     if(isPatio){
                         
-                        let d = NSDate(timeIntervalSince1970: (Double(time/1000)))
+                        let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: "OTHER", senderDisplayName: "ADMIN", date: d, text: message)
                         newData.addObject(message)
                     }
                     else{
-                        let d = NSDate(timeIntervalSince1970: (Double(time/1000)))
+                        let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: self.senderId, senderDisplayName: self.senderDisplayName, date: d, text: message)
                         
                         newData.addObject(message)
@@ -182,11 +182,11 @@ class MessagesViewController:JSQMessagesViewController{
                     
                     
                 }
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     
                     self.messages = NSArray(array:newData) as! [JSQMessage]
                     self.finishReceivingMessage()
-                    self.lastCheck = NSDate().timeIntervalSince1970
+                    self.lastCheck = Date().timeIntervalSince1970
                     
                     self.isRequestingMessages = false
                     if(shouldPlaySound){
@@ -201,12 +201,12 @@ class MessagesViewController:JSQMessagesViewController{
             catch{
                 print("FFUUUUUU")
             }
-        }
+        }) 
         task.resume()
 
     }
     
-    override func didPressSendButton(button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: NSDate!) {
+    override func didPressSendButton(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
         let message = JSQMessage(senderId: senderId, displayName: senderDisplayName, text: text)
         
         
@@ -226,20 +226,20 @@ class MessagesViewController:JSQMessagesViewController{
         self.collectionView.reloadData()
     }
     
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.messages.count
     }
     
-    override func collectionView(collectionView: JSQMessagesCollectionView!, messageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageData! {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageData! {
         let data = self.messages[indexPath.row]
         return data
     }
     
-    override func collectionView(collectionView: JSQMessagesCollectionView!, didDeleteMessageAtIndexPath indexPath: NSIndexPath!) {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, didDeleteMessageAtIndexPath indexPath: IndexPath!) {
         self.messages.removeAtIndex(indexPath.row)
     }
     
-    override func collectionView(collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageBubbleImageDataSource! {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageBubbleImageDataSource! {
         let data = messages[indexPath.row]
         switch(data.senderId) {
         case self.senderId:
@@ -249,11 +249,11 @@ class MessagesViewController:JSQMessagesViewController{
         }
     }
     
-    override func collectionView(collectionView: JSQMessagesCollectionView!, avatarImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageAvatarImageDataSource! {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, avatarImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageAvatarImageDataSource! {
         return nil
     }
     
-    override func didPressAccessoryButton(sender: UIButton!) {
+    override func didPressAccessoryButton(_ sender: UIButton!) {
         
     }
     

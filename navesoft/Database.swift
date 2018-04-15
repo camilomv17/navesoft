@@ -8,39 +8,39 @@
 
 import Foundation
 
-func pathForFile(filename:String) ->String?{
-    let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
-    let fileURL = documentsURL.URLByAppendingPathComponent(filename)
-    return fileURL!.path;
+func pathForFile(_ filename:String) ->String?{
+    let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    let fileURL = documentsURL.appendingPathComponent(filename)
+    return fileURL.path;
     
 }
 
-func loadData(filename:String) -> AnyObject?{
+func loadData(_ filename:String) -> AnyObject?{
     let filePath = pathForFile(filename);
-    let data = NSData(contentsOfFile:filePath!);
+    let data = try? Data(contentsOf: URL(fileURLWithPath: filePath!));
     if(data != nil){
     
-    let unarchiver = NSKeyedUnarchiver(forReadingWithData: data!);
-    let retrieval = unarchiver.decodeObjectForKey("data");
+    let unarchiver = NSKeyedUnarchiver(forReadingWith: data!);
+    let retrieval = unarchiver.decodeObject(forKey: "data");
     
     unarchiver.finishDecoding()
     
-    return retrieval;
+    return retrieval as AnyObject;
     }
     else{ return nil}
     
 }
 
-func saveData(thedata:AnyObject,filename:String){
+func saveData(_ thedata:AnyObject,filename:String){
     let data = NSMutableData()
     
-    let archiver = NSKeyedArchiver(forWritingWithMutableData: data);
+    let archiver = NSKeyedArchiver(forWritingWith: data);
     
-    archiver.encodeObject(thedata, forKey: "data");
+    archiver.encode(thedata, forKey: "data");
     
     archiver.finishEncoding()
     
-    data.writeToFile(pathForFile(filename)!, atomically: true);
+    data.write(toFile: pathForFile(filename)!, atomically: true);
     
 }
 

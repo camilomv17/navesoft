@@ -10,6 +10,13 @@ DEPENDENCIES:
   - GoogleMaps
   - JSQMessagesViewController
 
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - AEXML
+    - GoogleMaps
+    - JSQMessagesViewController
+    - JSQSystemSoundPlayer
+
 SPEC CHECKSUMS:
   AEXML: 716fb0a8decba4a3517324a71fee3685b30233d2
   GoogleMaps: c947160008f414c66707a5ea60f35e92055c7670
@@ -18,4 +25,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b75e09131810dfc6f2ac12597e07884b29776150
 
-COCOAPODS: 1.2.0.beta.1
+COCOAPODS: 1.5.0

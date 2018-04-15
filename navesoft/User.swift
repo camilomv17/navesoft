@@ -22,23 +22,23 @@ class User: NSObject,NSCoding {
     
      required convenience init?(coder aDecoder: NSCoder) {
         self.init()
-        id = aDecoder.decodeObjectForKey("id") as? String
-        cedula = aDecoder.decodeObjectForKey("cedula") as? String
-        nombre = aDecoder.decodeObjectForKey("nombre") as? String
-        celular = aDecoder.decodeObjectForKey("celular") as? String
-        placas = aDecoder.decodeObjectForKey("placas") as? String
-        tipo  = aDecoder.decodeObjectForKey("tipo") as? String
-        empresa = aDecoder.decodeObjectForKey("empresa") as? String
+        id = aDecoder.decodeObject(forKey: "id") as? String
+        cedula = aDecoder.decodeObject(forKey: "cedula") as? String
+        nombre = aDecoder.decodeObject(forKey: "nombre") as? String
+        celular = aDecoder.decodeObject(forKey: "celular") as? String
+        placas = aDecoder.decodeObject(forKey: "placas") as? String
+        tipo  = aDecoder.decodeObject(forKey: "tipo") as? String
+        empresa = aDecoder.decodeObject(forKey: "empresa") as? String
         
     }
     
-     func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(id, forKey: "id")
-        aCoder.encodeObject(cedula, forKey: "cedula")
-        aCoder.encodeObject(nombre, forKey: "nombre")
-        aCoder.encodeObject(celular, forKey: "celular")
-        aCoder.encodeObject(placas, forKey: "placas")
-        aCoder.encodeObject(tipo, forKey: "tipo")
-        aCoder.encodeObject(empresa, forKey: "empresa")
+     func encode(with aCoder: NSCoder) {
+        aCoder.encode(id, forKey: "id")
+        aCoder.encode(cedula, forKey: "cedula")
+        aCoder.encode(nombre, forKey: "nombre")
+        aCoder.encode(celular, forKey: "celular")
+        aCoder.encode(placas, forKey: "placas")
+        aCoder.encode(tipo, forKey: "tipo")
+        aCoder.encode(empresa, forKey: "empresa")
     }
 }

@@ -27,31 +27,31 @@ class Event:NSObject {
     
     required convenience init?(coder aDecoder: NSCoder) {
         self.init()
-        _id = aDecoder.decodeObjectForKey("_id") as? String
-        type = aDecoder.decodeObjectForKey("type") as? String
-        trailer = aDecoder.decodeObjectForKey("trailer") as? String
-        tamano = aDecoder.decodeObjectForKey("tamano") as? String
-        patio = aDecoder.decodeObjectForKey("patio") as? String
-        linea = aDecoder.decodeObjectForKey("linea") as? String
-        destino = aDecoder.decodeObjectForKey("destino") as? String
-        polyline = aDecoder.decodeObjectForKey("polyline") as? String
-        averageSpeed = aDecoder.decodeDoubleForKey("averageSpeed")
-        segundo = aDecoder.decodeObjectForKey("segundo") as? String
-        secondConfirmation = aDecoder.decodeBoolForKey("secondConfirmation")
+        _id = aDecoder.decodeObject(forKey: "_id") as? String
+        type = aDecoder.decodeObject(forKey: "type") as? String
+        trailer = aDecoder.decodeObject(forKey: "trailer") as? String
+        tamano = aDecoder.decodeObject(forKey: "tamano") as? String
+        patio = aDecoder.decodeObject(forKey: "patio") as? String
+        linea = aDecoder.decodeObject(forKey: "linea") as? String
+        destino = aDecoder.decodeObject(forKey: "destino") as? String
+        polyline = aDecoder.decodeObject(forKey: "polyline") as? String
+        averageSpeed = aDecoder.decodeDouble(forKey: "averageSpeed")
+        segundo = aDecoder.decodeObject(forKey: "segundo") as? String
+        secondConfirmation = aDecoder.decodeBool(forKey: "secondConfirmation")
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(_id, forKey: "_id")
-        aCoder.encodeObject(type, forKey: "type")
-        aCoder.encodeObject(trailer, forKey: "trailer")
-        aCoder.encodeObject(tamano, forKey: "tamano")
-        aCoder.encodeObject(patio, forKey: "patio")
-        aCoder.encodeObject(linea, forKey: "linea")
-        aCoder.encodeObject(destino, forKey: "destino")
-        aCoder.encodeObject(polyline,forKey: "polyline")
-        aCoder.encodeDouble(averageSpeed, forKey: "averageSpeed")
-        aCoder.encodeObject(segundo,forKey: "segundo")
-        aCoder.encodeBool(secondConfirmation, forKey: "secondConfirmation")
+    func encodeWithCoder(_ aCoder: NSCoder) {
+        aCoder.encode(_id, forKey: "_id")
+        aCoder.encode(type, forKey: "type")
+        aCoder.encode(trailer, forKey: "trailer")
+        aCoder.encode(tamano, forKey: "tamano")
+        aCoder.encode(patio, forKey: "patio")
+        aCoder.encode(linea, forKey: "linea")
+        aCoder.encode(destino, forKey: "destino")
+        aCoder.encode(polyline,forKey: "polyline")
+        aCoder.encode(averageSpeed, forKey: "averageSpeed")
+        aCoder.encode(segundo,forKey: "segundo")
+        aCoder.encode(secondConfirmation, forKey: "secondConfirmation")
         
     }
 }

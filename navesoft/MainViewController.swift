@@ -31,17 +31,17 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         
         self.navigationItem.title = "AviZaT"
         
-        self.view.backgroundColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.barTintColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
+        self.navigationController?.navigationBar.barTintColor = UIColor.white
         self.navigationController?.navigationBar.tintColor = BLUE_COLOR
         
         
         
         polylineLoaded = false
         
-         let plus =  UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MainViewController.servicePressed(_:)))
+         let plus =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MainViewController.servicePressed(_:)))
         self.navigationItem.rightBarButtonItem = plus
-        let profile = UIBarButtonItem(image: UIImage(named: "profile-icon.png"), style: .Plain, target: self, action: #selector(MainViewController.profilePressed(_:)))
+        let profile = UIBarButtonItem(image: UIImage(named: "profile-icon.png"), style: .plain, target: self, action: #selector(MainViewController.profilePressed(_:)))
         self.navigationItem.leftBarButtonItem = profile
         
         locationManager = CLLocationManager()
@@ -51,7 +51,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         locationManager?.delegate = self
         locationManager?.pausesLocationUpdatesAutomatically = false
         locationManager?.requestAlwaysAuthorization()
-        googleMap = GMSMapView.mapWithFrame(CGRectMake(0,0, self.view.bounds.size.width, self.view.bounds.size.height), camera: nil)
+        googleMap = GMSMapView.mapWithFrame(CGRect(x: 0,y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height), camera: nil)
         self.view.addSubview(googleMap!)
         centerMap()
         
@@ -65,37 +65,37 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
 
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         if(Brain.sharedBrain().currentEvent != nil){
-            let nav = NavigationView(frame: CGRectMake(0,64,self.view.bounds.size.width,80))
+            let nav = NavigationView(frame: CGRect(x: 0,y: 64,width: self.view.bounds.size.width,height: 80))
             self.view.addSubview(nav)
             nav.tag = kNavigationViewTag
             
-            let confirmButton = UIButton(frame: CGRectMake(0,self.view.bounds.size.height-60,self.view.bounds.size.width,60))
+            let confirmButton = UIButton(frame: CGRect(x: 0,y: self.view.bounds.size.height-60,width: self.view.bounds.size.width,height: 60))
             if(Brain.sharedBrain().currentEvent?.type == "pick"){
-                confirmButton.setTitle("CONFIRMAR RETIRADO", forState: .Normal)
+                confirmButton.setTitle("CONFIRMAR RETIRADO", for: UIControlState())
             }
             else{
-                confirmButton.setTitle("CONFIRMAR ENTREGADO", forState: .Normal)
+                confirmButton.setTitle("CONFIRMAR ENTREGADO", for: UIControlState())
             }
             
-            confirmButton.contentHorizontalAlignment = .Center
-            confirmButton.contentVerticalAlignment = .Center
+            confirmButton.contentHorizontalAlignment = .center
+            confirmButton.contentVerticalAlignment = .center
             confirmButton.backgroundColor = BLUE_COLOR
-            confirmButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+            confirmButton.setTitleColor(UIColor.white, for: UIControlState())
             confirmButton.tag = kConfirmButton
-            confirmButton.addTarget(self, action: #selector(MainViewController.confirmPressed), forControlEvents: .TouchUpInside)
+            confirmButton.addTarget(self, action: #selector(MainViewController.confirmPressed), for: .touchUpInside)
             self.view.addSubview(confirmButton)
             
             //self.navigationItem.rightBarButtonItem?.enabled = false
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(MainViewController.cancelEvent(_:)))
-            self.navigationItem.leftBarButtonItem?.enabled = false
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(MainViewController.cancelEvent(_:)))
+            self.navigationItem.leftBarButtonItem?.isEnabled = false
             self.getGoogleInformationRoute()
             
-           let messagesButton = UIButton(frame: CGRectMake(self.view.bounds.size.width-60,self.view.bounds.size.height-120,60,60))
+           let messagesButton = UIButton(frame: CGRect(x: self.view.bounds.size.width-60,y: self.view.bounds.size.height-120,width: 60,height: 60))
             
-            messagesButton.setImage(UIImage(named: "message-icon.png"), forState: .Normal)
-            messagesButton.addTarget(self, action: #selector(MainViewController.openMessages(_:)), forControlEvents: .TouchUpInside)
+            messagesButton.setImage(UIImage(named: "message-icon.png"), for: UIControlState())
+            messagesButton.addTarget(self, action: #selector(MainViewController.openMessages(_:)), for: .touchUpInside)
             
             messagesButton.tag = kMessageButtonTag
             
@@ -106,30 +106,30 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         }
     }
     
-    func openMessages(sender:AnyObject){
+    func openMessages(_ sender:AnyObject){
         let mess = MessagesViewController()
         self.navigationController?.pushViewController(mess, animated: true)
     }
     
-    func cancelEvent(sender:AnyObject){
+    func cancelEvent(_ sender:AnyObject){
         
-        let alertController = UIAlertController(title: "Cancelar", message: "¿Estás seguro de querer cancelar?", preferredStyle: .Alert)
+        let alertController = UIAlertController(title: "Cancelar", message: "¿Estás seguro de querer cancelar?", preferredStyle: .alert)
         
         // Initialize Actions
-        let yesAction = UIAlertAction(title: "SI", style: .Default) { (action) -> Void in
-            SwiftSpinner.setTitleFont(UIFont.systemFontOfSize(15))
+        let yesAction = UIAlertAction(title: "SI", style: .default) { (action) -> Void in
+            SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
             SwiftSpinner.show("Conectando...")
             let  url = "\(Brain.sharedBrain().serverIp!)/api/call/cancelEvent"
             
-            let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-            request.HTTPMethod = "POST"
+            let request = NSMutableURLRequest(url: URL(string: url)!)
+            request.httpMethod = "POST"
             let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&eventId=\((Brain.sharedBrain().currentEvent?._id)!)"
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-            let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
-            let length = CUnsignedLong((data?.length)!)
+            let data = postString.data(using: String.Encoding.utf8)
+            let length = CUnsignedLong((data?.count)!)
             request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-            request.HTTPBody = data
-            let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+            request.httpBody = data
+            let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
                 
                 SwiftSpinner.hide()
                 
@@ -139,12 +139,12 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                 }
                 
                 
-                if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+                if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                     print("statusCode should be 200, but is \(httpStatus.statusCode)")
                     print("response = \(response)")
                 }
                 
-                let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+                let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
                 print("responseString = \(responseString)")
                 
                 let mensaje = "Has cancelado tu registro"
@@ -156,22 +156,22 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                 
                 
                 
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     
                     
-                    let alertController = UIAlertController(title: titulo, message: mensaje, preferredStyle: .Alert)
+                    let alertController = UIAlertController(title: titulo, message: mensaje, preferredStyle: .alert)
                     
                     // Initialize Actions
-                    let yesAction = UIAlertAction(title: "OK", style: .Default) { (action) -> Void in
+                    let yesAction = UIAlertAction(title: "OK", style: .default) { (action) -> Void in
                         
                         self.view.viewWithTag(self.kNavigationViewTag)?.removeFromSuperview()
                         self.view.viewWithTag(self.kConfirmButton)?.removeFromSuperview()
                         self.view.viewWithTag(self.kMessageButtonTag)?.removeFromSuperview()
-                        self.navigationItem.rightBarButtonItem?.enabled = true
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
                         //TODOOOOOOO
-                        let plus =  UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MainViewController.servicePressed(_:)))
+                        let plus =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MainViewController.servicePressed(_:)))
                         self.navigationItem.rightBarButtonItem = plus
-                        self.navigationItem.leftBarButtonItem?.enabled = true
+                        self.navigationItem.leftBarButtonItem?.isEnabled = true
                         self.polylineLoaded = false
                         Brain.sharedBrain().currentEvent = nil
                         self.googleMap?.clear()
@@ -182,25 +182,25 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                     }
                     
                     alertController.addAction(yesAction)
-                    self.presentViewController(alertController, animated: true, completion: nil)
+                    self.present(alertController, animated: true, completion: nil)
                     
                     
                     
                     
                 })
                 
-            }
+            }) 
             task.resume()
             
         }
         
-        let noAction = UIAlertAction(title: "NO", style: .Cancel)  {(action) -> Void in
+        let noAction = UIAlertAction(title: "NO", style: .cancel)  {(action) -> Void in
         
         };
         
         alertController.addAction(yesAction)
         alertController.addAction(noAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
 
         
         
@@ -223,7 +223,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             driverMarker = GMSMarker(position: CLLocationCoordinate2DMake((locationManager?.location?.coordinate.latitude)!,(locationManager?.location?.coordinate.longitude)!))
                 driverMarker?.icon = UIImage(named: "truck_icon.png")
                 driverMarker?.map = googleMap
-                driverMarker?.groundAnchor = CGPointMake(0.5, 0.5);
+                driverMarker?.groundAnchor = CGPoint(x: 0.5, y: 0.5);
                 //locationManager?.startUpdatingHeading()
                 
                 locationManager?.startUpdatingLocation()
@@ -238,30 +238,30 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             let alertController = UIAlertController(
                 title: "Servicios de localización desactivados",
                 message: "Para poder utilizar la aplicación, debes habilitar los servicios de localización",
-                preferredStyle: .Alert)
+                preferredStyle: .alert)
             
-            let cancelAction = UIAlertAction(title: "Cancelar", style: .Cancel ){(action) in
+            let cancelAction = UIAlertAction(title: "Cancelar", style: .cancel ){(action) in
                 
             }
             alertController.addAction(cancelAction)
             
-            let openAction = UIAlertAction(title: "Preferencias", style: .Default) { (action) in
-                if let url = NSURL(string: "prefs:root=LOCATION_SERVICES") {
-                    UIApplication.sharedApplication().openURL(url)
+            let openAction = UIAlertAction(title: "Preferencias", style: .default) { (action) in
+                if let url = URL(string: "prefs:root=LOCATION_SERVICES") {
+                    UIApplication.shared.openURL(url)
                 }
             }
             alertController.addAction(openAction)
-            self.presentViewController(alertController, animated: true, completion: nil)
+            self.present(alertController, animated: true, completion: nil)
         }
     }
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         if(status == CLAuthorizationStatus.AuthorizedAlways){
             centerMap()
         }
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
 
         if(newHeading.headingAccuracy<0){
             return;
@@ -278,7 +278,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         let location = locations.last
         
@@ -301,7 +301,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         NSLog("latitude %+.6f, longitude %+.6f\n",
             location!.coordinate.latitude,
             location!.coordinate.longitude);
-        if(UIApplication.sharedApplication().applicationState == .Active){
+        if(UIApplication.shared.applicationState == .active){
         driverMarker?.position = CLLocationCoordinate2DMake(location!.coordinate.latitude, location!.coordinate.longitude)
         
             let camera = GMSCameraPosition.cameraWithLatitude((locationManager?.location?.coordinate.latitude)!,
@@ -315,47 +315,47 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         
     }
     
-    func servicePressed(sender:AnyObject){
-        self.presentViewController(EventRegisterController(), animated: true, completion: nil)
+    func servicePressed(_ sender:AnyObject){
+        self.present(EventRegisterController(), animated: true, completion: nil)
     }
     
-    func profilePressed(sender:AnyObject){
+    func profilePressed(_ sender:AnyObject){
         
-        self.presentViewController(ProfileViewController(), animated: true, completion: nil)
+        self.present(ProfileViewController(), animated: true, completion: nil)
     }
     
     
-    func sendLocationUpdatesToServer(posicion:CLLocationCoordinate2D,heading:Double){
+    func sendLocationUpdatesToServer(_ posicion:CLLocationCoordinate2D,heading:Double){
         
         
         let timeLeft = calculateETA()
-        let request = NSMutableURLRequest(URL: NSURL(string: "\(Brain.sharedBrain().serverIp!)/api/call/updatePosition")!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/updatePosition")!)
+        request.httpMethod = "POST"
         let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&lat=\(posicion.latitude)&lng=\(posicion.longitude)&heading=\(heading)&eta=\(timeLeft)&eventId=\((Brain.sharedBrain().currentEvent?._id)!)"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
+        let data = postString.dataUsingEncoding(String.Encoding.utf8)
         let length = CUnsignedLong((data?.length)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.HTTPBody = data
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 return
             }
             
-            if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
             print("responseString = \(responseString)")
-        }
+        }) 
         task.resume()
     }
     
     func confirmPressed(){
-        SwiftSpinner.setTitleFont(UIFont.systemFontOfSize(15))
+        SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
         SwiftSpinner.show("Conectando...")
         var url = ""
         if(Brain.sharedBrain().currentEvent?.type == "pick"){
@@ -369,15 +369,15 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         else{
             url = "\(Brain.sharedBrain().serverIp!)/api/call/finishEventDeliver"
         }
-        let request = NSMutableURLRequest(URL: NSURL(string: url)!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: url)!)
+        request.httpMethod = "POST"
         let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&eventId=\((Brain.sharedBrain().currentEvent?._id)!)"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
-        let length = CUnsignedLong((data?.length)!)
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-        request.HTTPBody = data
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        request.httpBody = data
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             
@@ -387,12 +387,12 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             }
             
             
-            if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
             print("responseString = \(responseString)")
             
                 var mensaje = ""
@@ -422,30 +422,30 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                 }
             
             let type = Brain.sharedBrain().currentEvent?.type;
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                
 
-                let alertController = UIAlertController(title: titulo, message: mensaje, preferredStyle: .Alert)
+                let alertController = UIAlertController(title: titulo, message: mensaje, preferredStyle: .alert)
                 
                 // Initialize Actions
-                let yesAction = UIAlertAction(title: "OK", style: .Default) { (action) -> Void in
+                let yesAction = UIAlertAction(title: "OK", style: .default) { (action) -> Void in
                     if(type == "pick"){
                         if(Brain.sharedBrain().currentEvent?.secondConfirmation == true){
                             self.view.viewWithTag(self.kNavigationViewTag)?.removeFromSuperview()
                             self.view.viewWithTag(self.kConfirmButton)?.removeFromSuperview()
                            
 
-                            self.navigationItem.rightBarButtonItem?.enabled = true
-                            let plus =  UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MainViewController.servicePressed(_:)))
+                            self.navigationItem.rightBarButtonItem?.isEnabled = true
+                            let plus =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MainViewController.servicePressed(_:)))
                             self.navigationItem.rightBarButtonItem = plus
-                            self.navigationItem.leftBarButtonItem?.enabled = true
+                            self.navigationItem.leftBarButtonItem?.isEnabled = true
                             self.polylineLoaded = false
                             Brain.sharedBrain().currentEvent = nil
                             Brain.sharedBrain().save()
                             
                         }
                         else{
-                            (self.view.viewWithTag(self.kConfirmButton) as!UIButton).setTitle("CONFIRMAR ENTREGA", forState: .Normal)
+                            (self.view.viewWithTag(self.kConfirmButton) as!UIButton).setTitle("CONFIRMAR ENTREGA", for: UIControlState())
                             self.view.viewWithTag(self.kNavigationViewTag)?.removeFromSuperview()
                             self.view.viewWithTag(self.kMessageButtonTag)?.removeFromSuperview()
                             self.googleMap?.clear()
@@ -459,10 +459,10 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                         self.view.viewWithTag(self.kConfirmButton)?.removeFromSuperview()
                         self.view.viewWithTag(self.kMessageButtonTag)?.removeFromSuperview()
 
-                        self.navigationItem.rightBarButtonItem?.enabled = true
-                        let plus =  UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MainViewController.servicePressed(_:)))
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
+                        let plus =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MainViewController.servicePressed(_:)))
                         self.navigationItem.rightBarButtonItem = plus
-                        self.navigationItem.leftBarButtonItem?.enabled = true
+                        self.navigationItem.leftBarButtonItem?.isEnabled = true
                         self.googleMap?.clear()
                         self.driverMarker?.map = self.googleMap
                         
@@ -475,14 +475,14 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                 }
                 
                 alertController.addAction(yesAction)
-                self.presentViewController(alertController, animated: true, completion: nil)
+                self.present(alertController, animated: true, completion: nil)
                 
                 
                 
                 
             })
             
-        }
+        }) 
         task.resume()
     }
     
@@ -495,14 +495,14 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             return;
         }
             
-            SwiftSpinner.setTitleFont(UIFont.systemFontOfSize(15))
+            SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
             SwiftSpinner.show("Actualizando...")
         
         let origin = "\((lastLocation?.coordinate.latitude)!),\((lastLocation?.coordinate.longitude)!)"
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\((Brain.sharedBrain().currentEvent?.destino)!)")!)
+        let request = NSMutableURLRequest(URL: URL(string: "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\((Brain.sharedBrain().currentEvent?.destino)!)")!)
         request.HTTPMethod = "GET"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        let task = URLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
             
             SwiftSpinner.hide()
             
@@ -512,7 +512,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             }
             
             
-            if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+            if let httpStatus = response as? NSHTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
@@ -544,10 +544,10 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         }
     }
     
-    func convertStringToDictionary(text: String) -> NSDictionary? {
-        if let data = text.dataUsingEncoding(NSUTF8StringEncoding) {
+    func convertStringToDictionary(_ text: String) -> NSDictionary? {
+        if let data = text.data(using: String.Encoding.utf8) {
             do {
-                let json = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? NSDictionary
+                let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? NSDictionary
                 return json
             } catch {
                 print("Something went wrong")
@@ -580,14 +580,14 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         
     }
     
-    func distance(from: CLLocationCoordinate2D, to:CLLocationCoordinate2D) -> CLLocationDistance {
+    func distance(_ from: CLLocationCoordinate2D, to:CLLocationCoordinate2D) -> CLLocationDistance {
         let _from = CLLocation(latitude: from.latitude, longitude: from.longitude)
         let _to = CLLocation(latitude: to.latitude, longitude: to.longitude)
         return _from.distanceFromLocation(_to)
     }
     
     
-    func getClosestIndexPointToPath(path: GMSPath,location:CLLocation) -> Int{
+    func getClosestIndexPointToPath(_ path: GMSPath,location:CLLocation) -> Int{
         var idx = -1;
         var minDistance = DBL_MAX;
         

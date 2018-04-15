@@ -17,30 +17,30 @@ class SelectViewController: UIViewController, UITextFieldDelegate {
         
         self.navigationItem.title = "AviZaT"
         
-        self.view.backgroundColor = UIColor.whiteColor();
-        self.navigationController?.navigationBar.barTintColor = UIColor.whiteColor();
+        self.view.backgroundColor = UIColor.white;
+        self.navigationController?.navigationBar.barTintColor = UIColor.white;
         self.navigationController?.navigationBar.tintColor = BLUE_COLOR;
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(SelectViewController.buttonPressed ))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(SelectViewController.buttonPressed ))
         
         
-        let label = UILabel(frame: CGRectMake(10,self.view.bounds.size.height/2 - 50,self.view.bounds.size.width - 20 , 50));
+        let label = UILabel(frame: CGRect(x: 10,y: self.view.bounds.size.height/2 - 50,width: self.view.bounds.size.width - 20 , height: 50));
         label.text = "Código de empresa";
-        label.textColor = UIColor.blackColor();
-        label.textAlignment = .Center;
+        label.textColor = UIColor.black;
+        label.textAlignment = .center;
         self.view.addSubview(label);
         
-        textField = UITextField(frame: CGRectMake(45,self.view.bounds.size.height/2,self.view.bounds.size.width - 90, 40))
+        textField = UITextField(frame: CGRect(x: 45,y: self.view.bounds.size.height/2,width: self.view.bounds.size.width - 90, height: 40))
         textField.layer.cornerRadius = 5
-        textField.layer.borderColor = UIColor.blackColor().CGColor
+        textField.layer.borderColor = UIColor.black.cgColor
         textField.layer.borderWidth = 1
         
         textField.placeholder = "Código"
-        textField.autocorrectionType = .No
-        textField.textAlignment = .Center
-        textField.autocapitalizationType = .AllCharacters
-        textField.returnKeyType = .Done;
+        textField.autocorrectionType = .no
+        textField.textAlignment = .center
+        textField.autocapitalizationType = .allCharacters
+        textField.returnKeyType = .done;
         textField.delegate = self
-        textField.font = UIFont.systemFontOfSize(14)
+        textField.font = UIFont.systemFont(ofSize: 14)
         
         self.view.addSubview(textField)
         
@@ -48,7 +48,7 @@ class SelectViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         buttonPressed()
         return true;
     }
@@ -58,72 +58,72 @@ class SelectViewController: UIViewController, UITextFieldDelegate {
     
     func buttonPressed(){
         if(textField.text == ""){
-            let actionSheetController: UIAlertController = UIAlertController(title: "Error", message: "Por favor completar el campo requerido.", preferredStyle: .Alert)
+            let actionSheetController: UIAlertController = UIAlertController(title: "Error", message: "Por favor completar el campo requerido.", preferredStyle: .alert)
             
             //Create and add the Cancel action
-            let cancelAction: UIAlertAction = UIAlertAction(title: "OK", style: .Cancel) { action -> Void in
+            let cancelAction: UIAlertAction = UIAlertAction(title: "OK", style: .cancel) { action -> Void in
                 //Just dismiss the action sheet
             }
             actionSheetController.addAction(cancelAction)
-            self.presentViewController(actionSheetController, animated: true, completion: nil)
+            self.present(actionSheetController, animated: true, completion: nil)
             return;
 
         }
         else{
             self.view.endEditing(true);
-            SwiftSpinner.setTitleFont(UIFont.systemFontOfSize(15))
+            SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
             SwiftSpinner.show("Conectando...")
-            let request = NSMutableURLRequest(URL: NSURL(string: "\(SERVER_IP)/api/call/askForHost")!)
-            request.HTTPMethod = "POST"
+            let request = NSMutableURLRequest(url: URL(string: "\(SERVER_IP)/api/call/askForHost")!)
+            request.httpMethod = "POST"
             let postString = "host=\(textField.text!)"
             
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-            let data = postString.dataUsingEncoding(NSUTF8StringEncoding)
-            let length = CUnsignedLong((data?.length)!)
+            let data = postString.data(using: String.Encoding.utf8)
+            let length = CUnsignedLong((data?.count)!)
             request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-            request.HTTPBody = data
-            let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+            request.httpBody = data
+            let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
                 guard error == nil && data != nil else {                                                          // check for fundamental networking error
                     print("error=\(error)")
                     return
                 }
                 
-                if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+                if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                     print("statusCode should be 200, but is \(httpStatus.statusCode)")
                     print("response = \(response)")
                     
                     
                 }
                 
-                let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+                let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
                 print("responseString = \(responseString)")
                 
                 do{
                     SwiftSpinner.hide()
-                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options:NSJSONReadingOptions.MutableContainers) as! NSDictionary
-                    let status = json.objectForKey("status") as? String
+                    let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
+                    let status = json.object(forKey: "status") as? String
                     
                     if(status == "OK"){
-                        let url = json.objectForKey("url") as? String
+                        let url = json.object(forKey: "url") as? String
                         Brain.sharedBrain().serverIp = url
                         Brain.sharedBrain().serverCode = self.textField.text!
                         Brain.sharedBrain().save()
                         
-                        dispatch_async(dispatch_get_main_queue(),{
+                        DispatchQueue.main.async(execute: {
                             self.navigationController?.pushViewController(RegisterViewController(), animated: true);
                         });
                     }
                     else{
-                        dispatch_async(dispatch_get_main_queue(),{
+                        DispatchQueue.main.async(execute: {
 
-                        let actionSheetController: UIAlertController = UIAlertController(title: "Error", message: "El código no es válido.", preferredStyle: .Alert)
+                        let actionSheetController: UIAlertController = UIAlertController(title: "Error", message: "El código no es válido.", preferredStyle: .alert)
                         
                         //Create and add the Cancel action
-                        let cancelAction: UIAlertAction = UIAlertAction(title: "OK", style: .Cancel) { action -> Void in
+                        let cancelAction: UIAlertAction = UIAlertAction(title: "OK", style: .cancel) { action -> Void in
                             //Just dismiss the action sheet
                         }
                         actionSheetController.addAction(cancelAction)
-                        self.presentViewController(actionSheetController, animated: true, completion: nil)
+                        self.present(actionSheetController, animated: true, completion: nil)
                         return;
                         });
                     }
@@ -138,7 +138,7 @@ class SelectViewController: UIViewController, UITextFieldDelegate {
                 catch{
                     print("FFUUUUUU")
                 }
-            }
+            }) 
             task.resume()
         }
     }

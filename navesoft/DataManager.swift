@@ -16,19 +16,19 @@ class DataManager: NSObject,NSCoding {
     required convenience init?(coder aDecoder: NSCoder) {
         self.init()
         
-        user = aDecoder .decodeObjectForKey("user") as? User
+        user = aDecoder .decodeObject(forKey: "user") as? User
         
-        event = aDecoder.decodeObjectForKey("event") as? Event
+        event = aDecoder.decodeObject(forKey: "event") as? Event
         
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder .encodeObject(user, forKey: "user")
-        aCoder.encodeObject(event, forKey: "event")
+    func encode(with aCoder: NSCoder) {
+        aCoder .encode(user, forKey: "user")
+        aCoder.encode(event, forKey: "event")
 
     }
     
-    func synced(lock: AnyObject, closure: () -> ()) {
+    func synced(_ lock: AnyObject, closure: () -> ()) {
         objc_sync_enter(lock)
         closure()
         objc_sync_exit(lock)

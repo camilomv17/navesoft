@@ -8,8 +8,21 @@
 
 import Foundation
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
 
-public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UIPickerViewDataSource,UIPickerViewDelegate {
+
+open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UIPickerViewDataSource,UIPickerViewDelegate {
     
     let kPatioPicker = 1
     let kLineaPicker = 2
@@ -17,7 +30,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
     
     var tableView = UITableView()
     var pickerCellRowHeight = 162.0
-    var datePickerIndexPath:NSIndexPath?
+    var datePickerIndexPath:IndexPath?
     var patioPicker:UIPickerView?
     var initialTvHeight = CGFloat(0.0)
     let kPatioPickerTag = 1
@@ -37,10 +50,10 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
         selectedPatio = 0;
         self.dataLines = lines;
         self.dataPatios = patios
-        tableView = UITableView(frame: self.bounds, style: .Grouped)
+        tableView = UITableView(frame: self.bounds, style: .grouped)
         tableView.dataSource = self;
         tableView.delegate = self;
-        tableView.backgroundColor = UIColor.whiteColor()
+        tableView.backgroundColor = UIColor.white
         self.addSubview(tableView)
         initialTvHeight = tableView.frame.size.height
       //  NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardShown:", name: UIKeyboardDidShowNotification, object: nil)
@@ -63,41 +76,41 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
     }
     
     func hideExistingPicker(){
-        self.tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: (self.datePickerIndexPath?.row)!, inSection: 0)], withRowAnimation: .Fade)
+        self.tableView.deleteRows(at: [IndexPath(row: (self.datePickerIndexPath?.row)!, section: 0)], with: .fade)
         self.datePickerIndexPath = nil
     }
     
-    func calculateInexPathForNewPicker(selectedIndexPath:NSIndexPath) ->NSIndexPath
+    func calculateInexPathForNewPicker(_ selectedIndexPath:IndexPath) ->IndexPath
     {
-        let newIndexPath:NSIndexPath
+        let newIndexPath:IndexPath
         
         if(self.datePickerIsShown() && self.datePickerIndexPath?.row < selectedIndexPath.row){
-            newIndexPath = NSIndexPath(forRow: selectedIndexPath.row-1, inSection: 0)
+            newIndexPath = IndexPath(row: selectedIndexPath.row-1, section: 0)
         }
         else{
-            newIndexPath = NSIndexPath(forRow: selectedIndexPath.row, inSection: 0)
+            newIndexPath = IndexPath(row: selectedIndexPath.row, section: 0)
         }
         
         return newIndexPath
     }
     
-    func showNewPickerAtIndex(indexPath:NSIndexPath){
-        let  indexPaths = [NSIndexPath(forRow: indexPath.row + 1, inSection: 0)]
+    func showNewPickerAtIndex(_ indexPath:IndexPath){
+        let  indexPaths = [IndexPath(row: indexPath.row + 1, section: 0)]
         
-        self.tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Fade)
+        self.tableView.insertRows(at: indexPaths, with: .fade)
         
         
     }
     
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
         
         if(self.datePickerIsShown() && (self.datePickerIndexPath?.row == indexPath.row)){
-            var cell = self.tableView.dequeueReusableCellWithIdentifier("PickerCell")
+            var cell = self.tableView.dequeueReusableCell(withIdentifier: "PickerCell")
             if(cell==nil){
-                cell = UITableViewCell(style: .Default, reuseIdentifier: "PickerCell")
-                patioPicker = UIPickerView(frame: CGRectMake(0,0,self.bounds.size.width,162))
+                cell = UITableViewCell(style: .default, reuseIdentifier: "PickerCell")
+                patioPicker = UIPickerView(frame: CGRect(x: 0,y: 0,width: self.bounds.size.width,height: 162))
                 patioPicker?.dataSource = self
                 patioPicker?.delegate = self
                 patioPicker?.tag = kPatioPickerTag
@@ -112,21 +125,21 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
              return cell!
         }
         else{
-            var cell = self.tableView.dequeueReusableCellWithIdentifier("cell")
+            var cell = self.tableView.dequeueReusableCell(withIdentifier: "cell")
             if(cell==nil){
-                cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: "cell")
+                cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: "cell")
             }
-            cell?.accessoryType = .None
+            cell?.accessoryType = .none
             if(indexPath.row == 0){
-                let textField = UITextField(frame: CGRectMake(140, 7.5, 185, 30))
+                let textField = UITextField(frame: CGRect(x: 140, y: 7.5, width: 185, height: 30))
                 textField.adjustsFontSizeToFitWidth = true
-                textField.textColor = UIColor.blackColor()
+                textField.textColor = UIColor.black
                 textField.placeholder = "";
-                textField.keyboardType = UIKeyboardType.Default;
-                textField.autocorrectionType = .No
-                textField.returnKeyType = .Done;
-                textField.backgroundColor = UIColor.whiteColor()
-                textField.textAlignment = .Left
+                textField.keyboardType = UIKeyboardType.default;
+                textField.autocorrectionType = .no
+                textField.returnKeyType = .done;
+                textField.backgroundColor = UIColor.white
+                textField.textAlignment = .left
                 textField.delegate = self
                 textField.tag = kTextFieldChildTag
                 cell?.contentView.addSubview(textField)
@@ -141,14 +154,14 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
             }
             else if(indexPath.row == 2){
                 cell?.textLabel?.text = "Linea Naviera"
-                cell?.detailTextLabel?.text = (dataLines?.objectAtIndex(0) as! NSDictionary).objectForKey("code") as? String
+                cell?.detailTextLabel?.text = (dataLines?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
                 self.linePicked = (cell?.detailTextLabel?.text)!
                 
             }
             else if(indexPath.row == 3){
                 
                 cell?.textLabel?.text = "Patio"
-                cell?.detailTextLabel?.text = (dataPatios?.objectAtIndex(0) as! NSDictionary).objectForKey("name") as? String
+                cell?.detailTextLabel?.text = (dataPatios?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
                 self.patioPicked = (cell?.detailTextLabel?.text)!
                 
             }
@@ -162,7 +175,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
         
     }
     
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var numberOfRows = 4
         if(self.datePickerIsShown()){
             numberOfRows = numberOfRows+1;
@@ -170,7 +183,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
         return numberOfRows;
     }
     
-    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     
         
         self.tableView.beginUpdates()
@@ -183,7 +196,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
             
             if(self.datePickerIsShown()){
                 self.hideExistingPicker()
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                tableView.deselectRow(at: indexPath, animated: true)
                 
                 self.tableView.endUpdates()
                 return
@@ -204,32 +217,32 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
                     currentPicker = kPatioPicker
                 }
                 self.patioPicker?.reloadAllComponents()
-                self.datePickerIndexPath = NSIndexPath(forRow: newPickerIndexPath.row + 1, inSection: 0)
+                self.datePickerIndexPath = IndexPath(row: newPickerIndexPath.row + 1, section: 0)
             }
             else{
-                let cell = self.tableView.cellForRowAtIndexPath(indexPath)
+                let cell = self.tableView.cellForRow(at: indexPath)
                 cell?.viewWithTag(kTextFieldChildTag)?.becomeFirstResponder()
             }
            
         }
     
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
     
         self.tableView.endUpdates()
         
         
     }
     
-    public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    open func numberOfSections(in tableView: UITableView) -> Int {
         
         return 1;
     }
     
-    public func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 25
     }
     
-    public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var rowHeight = 45.0
         
         if(self.datePickerIsShown() && (self.datePickerIndexPath?.row == indexPath.row)){
@@ -242,13 +255,13 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
         
     }
     
-    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Datos para recogida de contenedor"
     }
     
     
     
-    public func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    open func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if(currentPicker == kPatioPicker){
             return (dataPatios?.count)!
         }
@@ -262,44 +275,44 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
         
     }
     
-    public func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    open func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if(currentPicker == kPatioPicker){
-            let dict = dataPatios?.objectAtIndex(row) as! NSDictionary
-            return dict.objectForKey("name") as? String
+            let dict = dataPatios?.object(at: row) as! NSDictionary
+            return dict.object(forKey: "name") as? String
             
         }
         else if(currentPicker == kLineaPicker){
-            let dict = dataLines?.objectAtIndex(row) as! NSDictionary
-            return dict.objectForKey("code") as? String
+            let dict = dataLines?.object(at: row) as! NSDictionary
+            return dict.object(forKey: "code") as? String
         }
         else{
-            return dataTamaños?.objectAtIndex(row) as? String
+            return dataTamaños?.object(at: row) as? String
         }
     }
     
-    public func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    open func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
-    public func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    open func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if(currentPicker == kPatioPicker){
-            let dict = dataPatios?.objectAtIndex(row) as! NSDictionary
-            self.patioPicked = (dict.objectForKey("name") as? String)!
+            let dict = dataPatios?.object(at: row) as! NSDictionary
+            self.patioPicked = (dict.object(forKey: "name") as? String)!
             selectedPatio = row;
-            let cell = self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 3, inSection: 0))
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 3, section: 0))
             cell?.detailTextLabel?.text = self.patioPicked
             print(self.patioPicked)
         }
         else if(currentPicker == kLineaPicker){
-            let dict = dataLines?.objectAtIndex(row) as! NSDictionary
-            self.linePicked = (dict.objectForKey("code") as? String)!
-            let cell = self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 2, inSection: 0))
+            let dict = dataLines?.object(at: row) as! NSDictionary
+            self.linePicked = (dict.object(forKey: "code") as? String)!
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 2, section: 0))
             cell?.detailTextLabel?.text = self.linePicked
             print(self.linePicked)
         }
         else{
-            self.tamanoPicked = (dataTamaños?.objectAtIndex(row) as? String)!
-            let cell = self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 1, inSection: 0))
+            self.tamanoPicked = (dataTamaños?.object(at: row) as? String)!
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0))
             cell?.detailTextLabel?.text = self.tamanoPicked
             print(self.tamanoPicked)
 
@@ -309,7 +322,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
     
     
     
-    public func textFieldShouldReturn(textField: UITextField) -> Bool {
+    open func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true;
     }
@@ -323,13 +336,13 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
         }
         let info = NSMutableDictionary()
         
-        let booking = (self.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0))?.viewWithTag(kTextFieldChildTag) as! UITextField).text
+        let booking = (self.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.viewWithTag(kTextFieldChildTag) as! UITextField).text
         
         if(booking == ""){
             return nil;
         }
         else{
-            info.setObject(booking!, forKey: "Booking")
+            info.setObject(booking!, forKey: "Booking" as NSCopying)
         }
         
         let tamano = tamanoPicked
@@ -338,7 +351,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
             return nil
         }
         else{
-            info.setObject(tamano, forKey: "Tamano")
+            info.setObject(tamano, forKey: "Tamano" as NSCopying)
         }
         
         let linea = self.linePicked
@@ -347,7 +360,7 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
             return nil
         }
         else{
-            info.setObject(linea, forKey: "Linea")
+            info.setObject(linea, forKey: "Linea" as NSCopying)
         }
         
         let patio = self.patioPicked
@@ -356,12 +369,12 @@ public class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSour
             return nil
         }
         else{
-            info.setObject(patio, forKey: "Patio")
+            info.setObject(patio, forKey: "Patio" as NSCopying)
         }
         
-        let dict = dataPatios?.objectAtIndex(selectedPatio) as! NSDictionary
-        let patioCode = (dict.objectForKey("code") as? String)!
-        info.setObject(patioCode, forKey: "patioCode");
+        let dict = dataPatios?.object(at: selectedPatio) as! NSDictionary
+        let patioCode = (dict.object(forKey: "code") as? String)!
+        info.setObject(patioCode, forKey: "patioCode" as NSCopying);
         
         return info
     }

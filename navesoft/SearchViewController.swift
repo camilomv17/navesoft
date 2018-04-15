@@ -20,21 +20,21 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         
         super.viewDidLoad()
         
-        let navigationBar = UINavigationBar(frame: CGRectMake(0,0,self.view.bounds.size.width,64))
-        navigationBar.backgroundColor = UIColor.whiteColor()
+        let navigationBar = UINavigationBar(frame: CGRect(x: 0,y: 0,width: self.view.bounds.size.width,height: 64))
+        navigationBar.backgroundColor = UIColor.white
         let navigationItem = UINavigationItem()
         navigationItem.title = "EMPRESAS"
         
-        let rightButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(SearchViewController.donePressed))
+        let rightButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(SearchViewController.donePressed))
         navigationItem.rightBarButtonItem = rightButton
-        let leftButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(SearchViewController.cancelPressed))
+        let leftButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(SearchViewController.cancelPressed))
         
         navigationItem.leftBarButtonItem = leftButton
         navigationBar.items = [navigationItem]
         self.view.addSubview(navigationBar)
         
         
-        tableView = UITableView(frame: CGRectMake(0,64,self.view.bounds.size.width,self.view.bounds.size.height-64),style: .Plain)
+        tableView = UITableView(frame: CGRect(x: 0,y: 64,width: self.view.bounds.size.width,height: self.view.bounds.size.height-64),style: .plain)
         displayController = UISearchController(searchResultsController: nil)
         displayController?.searchResultsUpdater = self
         displayController?.dimsBackgroundDuringPresentation = false
@@ -51,19 +51,19 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         fetchData()
         
     }
     
     func fetchData(){
-            SwiftSpinner.setTitleFont(UIFont.systemFontOfSize(15))
+            SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
             SwiftSpinner.show("Conectando...")
-            let request = NSMutableURLRequest(URL: NSURL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getCompanies")!)
-            request.HTTPMethod = "POST"
+            let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getCompanies")!)
+            request.httpMethod = "POST"
         
             request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-            let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+            let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
                 
                 SwiftSpinner.hide()
                 guard error == nil && data != nil else {                                                          // check for fundamental networking error
@@ -71,27 +71,27 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
                     return
                 }
                 
-                if let httpStatus = response as? NSHTTPURLResponse where httpStatus.statusCode != 200 {           // check for http errors
+                if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                     print("statusCode should be 200, but is \(httpStatus.statusCode)")
                     print("response = \(response)")
                 }
                 
-                let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+                let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
                 print("responseString = \(responseString)")
                 
                 var error:NSError?
                 let newData = NSMutableArray()
                 do{
-                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options:NSJSONReadingOptions.MutableContainers) as! NSArray
+                    let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSArray
                     for element in json {
                         let dict = element as! NSDictionary
-                        let name = dict.objectForKey("name") as! String
-                        newData.addObject(name)
+                        let name = dict.object(forKey: "name") as! String
+                        newData.add(name)
                         
                     }
                     
                     self.data = NSArray(array:newData) as! [String]
-                    dispatch_async(dispatch_get_main_queue(),{
+                    DispatchQueue.main.async(execute: {
                         self.tableView?.reloadData()
                     });
                     
@@ -101,7 +101,7 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
                 catch{
                     print("FFUUUUUU")
                 }
-            }
+            }) 
             task.resume()
         }
     
@@ -112,31 +112,31 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
             let  controllers = (self.presentingViewController as! UINavigationController).viewControllers as NSArray
         
             let parent = controllers.lastObject as! RegisterViewController
-            self.presentingViewController?.dismissViewControllerAnimated(true, completion: {() in parent.setCompanySelected((self.displayController?.searchBar.text)!)})
+            self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected((self.displayController?.searchBar.text)!)})
         }
         else{
             let parent = self.presentingViewController as! ProfileViewController
-            self.presentingViewController?.dismissViewControllerAnimated(true, completion: {() in parent.setCompanySelected((self.displayController?.searchBar.text)!)})
+            self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected((self.displayController?.searchBar.text)!)})
         }
        
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if(self.presentingViewController is UINavigationController){
         let  controllers = (self.presentingViewController as! UINavigationController).viewControllers as NSArray
         if(shouldShowSearchResults){
             let text = searchData[indexPath.row]
             let parent = controllers.lastObject as! RegisterViewController
             
-            self.presentingViewController?.dismissViewControllerAnimated(true, completion: {() in parent.setCompanySelected(text)})
+            self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
             
         }
         else{
             let text = data[indexPath.row]
             let parent = controllers.lastObject as! RegisterViewController
             
-            self.presentingViewController?.dismissViewControllerAnimated(true, completion: {() in parent.setCompanySelected(text)})
+            self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
         }
         }
         else{
@@ -144,24 +144,24 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
                 let text = searchData[indexPath.row]
                 let parent = self.presentingViewController as! ProfileViewController
                 
-                self.presentingViewController?.dismissViewControllerAnimated(true, completion: {() in parent.setCompanySelected(text)})
+                self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
                 
             }
             else{
                 let text = data[indexPath.row]
                  let parent = self.presentingViewController as! ProfileViewController
                 
-                self.presentingViewController?.dismissViewControllerAnimated(true, completion: {() in parent.setCompanySelected(text)})
+                self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
             }
         }
     }
     
     func cancelPressed(){
         displayController?.searchBar.resignFirstResponder()
-        self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        self.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if shouldShowSearchResults{
         return (searchData.count)
         }
@@ -170,10 +170,10 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = self.tableView!.dequeueReusableCellWithIdentifier("cell")
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = self.tableView!.dequeueReusableCell(withIdentifier: "cell")
         if(cell==nil){
-            cell = UITableViewCell(style: .Default, reuseIdentifier: "cell")
+            cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
         }
 
         
@@ -187,16 +187,16 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         return cell!
     }
     
-    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         shouldShowSearchResults = true
         tableView?.reloadData()
     }
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         shouldShowSearchResults = false
         tableView?.reloadData()
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if !shouldShowSearchResults {
             shouldShowSearchResults = true
             tableView?.reloadData()
@@ -205,14 +205,14 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         displayController?.searchBar.resignFirstResponder()
     }
     
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         let searchString = searchController.searchBar.text
         print("UPDATING")
         // Filter the data array and get only those countries that match the search text.
         searchData = data.filter({ (e) -> Bool in
-            let eText: NSString = e
+            let eText: NSString = e as NSString
             
-            return (eText.rangeOfString(searchString!, options: NSStringCompareOptions.CaseInsensitiveSearch).location) != NSNotFound
+            return (eText.range(of: searchString!, options: NSString.CompareOptions.caseInsensitive).location) != NSNotFound
         })
         
         // Reload the tableview.
