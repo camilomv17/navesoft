@@ -211,14 +211,14 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
     
     func centerMap(){
         if(CLLocationManager.locationServicesEnabled()){
-            if(CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedAlways){
+            if(CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways){
             
             
             
-            let camera = GMSCameraPosition.cameraWithLatitude((locationManager?.location?.coordinate.latitude)!,
+            let camera = GMSCameraPosition.camera(withLatitude: (locationManager?.location?.coordinate.latitude)!,
                 longitude: (locationManager?.location?.coordinate.longitude)!, zoom: 15)
                 googleMap?.camera = camera
-            googleMap!.myLocationEnabled = false
+            googleMap!.isMyLocationEnabled = false
                 
             driverMarker = GMSMarker(position: CLLocationCoordinate2DMake((locationManager?.location?.coordinate.latitude)!,(locationManager?.location?.coordinate.longitude)!))
                 driverMarker?.icon = UIImage(named: "truck_icon.png")
@@ -255,8 +255,8 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if(status == CLAuthorizationStatus.AuthorizedAlways){
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if(status == CLAuthorizationStatus.authorizedAlways){
             centerMap()
         }
     }
@@ -304,7 +304,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         if(UIApplication.shared.applicationState == .active){
         driverMarker?.position = CLLocationCoordinate2DMake(location!.coordinate.latitude, location!.coordinate.longitude)
         
-            let camera = GMSCameraPosition.cameraWithLatitude((locationManager?.location?.coordinate.latitude)!,
+            let camera = GMSCameraPosition.camera(withLatitude: (locationManager?.location?.coordinate.latitude)!,
                                                           longitude: (locationManager?.location?.coordinate.longitude)!, zoom: 15)
         
             googleMap?.camera = camera
@@ -333,10 +333,10 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         request.httpMethod = "POST"
         let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&lat=\(posicion.latitude)&lng=\(posicion.longitude)&heading=\(heading)&eta=\(timeLeft)&eventId=\((Brain.sharedBrain().currentEvent?._id)!)"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(String.Encoding.utf8)
-        let length = CUnsignedLong((data?.length)!)
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-        request.HTTPBody = data
+        request.httpBody = data
         let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
@@ -499,10 +499,10 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             SwiftSpinner.show("Actualizando...")
         
         let origin = "\((lastLocation?.coordinate.latitude)!),\((lastLocation?.coordinate.longitude)!)"
-        let request = NSMutableURLRequest(URL: URL(string: "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\((Brain.sharedBrain().currentEvent?.destino)!)")!)
-        request.HTTPMethod = "GET"
+        let request = NSMutableURLRequest(url: URL(string: "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\((Brain.sharedBrain().currentEvent?.destino)!)")!)
+        request.httpMethod = "GET"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let task = URLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest) { data, response, error in
             
             SwiftSpinner.hide()
             
@@ -512,19 +512,19 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             }
             
             
-            if let httpStatus = response as? NSHTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            let responseString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
             print("responseString = \(responseString!)")
             
             let dict = self.convertStringToDictionary(responseString! as String)
-            let overview = ((dict?.objectForKey("routes") as? NSArray)![0].objectForKey("overview_polyline") as? NSDictionary)?.objectForKey("points") as? String
+            let overview = (((dict?.object(forKey: "routes") as? NSArray)![0] as AnyObject).object("overview_polyline") as? NSDictionary)?.object(forKey: "points") as? String
             Brain.sharedBrain().currentEvent?.polyline = overview
             Brain.sharedBrain().save()
-            let pol = GMSPolyline(path: GMSPath(fromEncodedPath: overview))
+            let pol = GMSPolyline(path: GMSPath(fromEncodedPath: overview!))
             pol.strokeWidth = 2;
             pol.map = self.googleMap;
             self.polylineLoaded = true
@@ -535,7 +535,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         }
         else{
             let overview = Brain.sharedBrain().currentEvent?.polyline
-            let pol = GMSPolyline(path: GMSPath(fromEncodedPath: overview))
+            let pol = GMSPolyline(path: GMSPath(fromEncodedPath: overview!))
             pol.strokeWidth = 2;
             
             pol.map = self.googleMap;
@@ -557,15 +557,15 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
     }
     
     func calculateETA() -> Double{
-        let path = GMSPath(fromEncodedPath: Brain.sharedBrain().currentEvent!.polyline)
+        let path = GMSPath(fromEncodedPath: Brain.sharedBrain().currentEvent!.polyline!)
         var totalDistance = 0.0
         
-        let startIndex = self.getClosestIndexPointToPath(path, location: lastLocation!)
+        let startIndex = self.getClosestIndexPointToPath(path!, location: lastLocation!)
         print(startIndex)
-        for var i in UInt(startIndex+1)...(path.count()-1) {
-            let location1 = path.coordinateAtIndex(i-1)
-            let location2 = path.coordinateAtIndex(i)
-            totalDistance = totalDistance + distance(location1, to: location2) as Double
+        for let i in UInt(startIndex+1)...((path?.count())!-1) {
+            let location1 = path?.coordinate(at: i-1)
+            let location2 = path?.coordinate(at: i)
+            totalDistance = totalDistance + distance(location1!, to: location2!) as Double
         }
         
         totalDistance = totalDistance/1000;
@@ -583,7 +583,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
     func distance(_ from: CLLocationCoordinate2D, to:CLLocationCoordinate2D) -> CLLocationDistance {
         let _from = CLLocation(latitude: from.latitude, longitude: from.longitude)
         let _to = CLLocation(latitude: to.latitude, longitude: to.longitude)
-        return _from.distanceFromLocation(_to)
+        return _from.distance(from: _to)
     }
     
     
@@ -591,10 +591,10 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         var idx = -1;
         var minDistance = DBL_MAX;
         
-        for var i in 0...path.count()-1{
-            let temp = path.coordinateAtIndex(i)
+        for let i in 0...path.count()-1{
+            let temp = path.coordinate(at: i)
             let dist = distance(location.coordinate, to: temp) as Double?
-            if (dist < minDistance){
+            if (dist! < minDistance){
                 minDistance = dist!
                 idx = Int(i);
             }

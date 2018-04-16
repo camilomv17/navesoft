@@ -184,7 +184,7 @@ class Brain:NSObject{
     }
     
     func addMessageToQueue(_ message:JSQMessage){
-        messagesQueue?.addObject(message)
+        messagesQueue?.add(message)
         startSendingMessages()
     }
     
@@ -198,17 +198,17 @@ class Brain:NSObject{
     }
     
     func sendNextMessage(){
-        let next:JSQMessage = (messagesQueue?.objectAtIndex(0))! as! JSQMessage
+        let next:JSQMessage = (messagesQueue?.object(at: 0))! as! JSQMessage
         
         
         let request = NSMutableURLRequest(url: URL(string: "\(SERVER_IP)/api/call/sendMessage")!)
         request.httpMethod = "POST"
         let postString = "id=\((currentUser?.id)!)&message=\(next.text!)&eventId=\((currentEvent?._id)!)"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let data = postString.dataUsingEncoding(String.Encoding.utf8)
-        let length = CUnsignedLong((data?.length)!)
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
-        request.HTTPBody = data
+        request.httpBody = data
 
         let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             

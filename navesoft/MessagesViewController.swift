@@ -11,8 +11,8 @@ import UIKit
 import JSQMessagesViewController
 class MessagesViewController:JSQMessagesViewController{
     
-    let incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImageWithColor(UIColor.lightGrayColor())
-    let outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImageWithColor(BLUE_COLOR)
+    let incomingBubble = JSQMessagesBubbleImageFactory().incomingMessagesBubbleImage(with: UIColor.lightGray)
+    let outgoingBubble = JSQMessagesBubbleImageFactory().outgoingMessagesBubbleImage(with: BLUE_COLOR)
     var messages = [JSQMessage]()
 
     var firstFetch:Bool?
@@ -24,8 +24,8 @@ class MessagesViewController:JSQMessagesViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         //automaticallyScrollsToMostRecentMessage = true
-        self.senderId = UIDevice.currentDevice().identifierForVendor?.UUIDString
-        self.senderDisplayName = UIDevice.currentDevice().identifierForVendor?.UUIDString
+        self.senderId = UIDevice.currentDevice.identifierForVendor?.UUIDString
+        self.senderDisplayName = UIDevice.currentDevice.identifierForVendor?.UUIDString
         navigationController?.navigationBar.topItem?.title = ""
         self.navigationItem.title = "Mensajes"
         firstFetch = false
@@ -206,20 +206,20 @@ class MessagesViewController:JSQMessagesViewController{
 
     }
     
-    override func didPressSendButton(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
+    override func didPressSend(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
         let message = JSQMessage(senderId: senderId, displayName: senderDisplayName, text: text)
         
         
         
         messages+=[message]
         
-        Brain.sharedBrain().addMessageToQueue(message)
+        Brain.sharedBrain().addMessageToQueue(message!)
         
         
         
         JSQSystemSoundPlayer.jsq_playMessageSentSound()
         
-        finishSendingMessageAnimated(true)
+        finishSendingMessage(animated: true)
     }
     
     func reloadData(){
@@ -236,7 +236,7 @@ class MessagesViewController:JSQMessagesViewController{
     }
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, didDeleteMessageAtIndexPath indexPath: IndexPath!) {
-        self.messages.removeAtIndex(indexPath.row)
+        self.messages.remove(at: indexPath.row)
     }
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageBubbleImageDataSource! {

@@ -6,7 +6,7 @@ target 'navesoft' do
 pod 'GoogleMaps'
 pod 'JSQMessagesViewController'
 #pod 'BRYXBanner'
-pod "AEXML", "~> 3.0.0"
+pod "AEXML"
 end
 
 target 'navesoftTests' do
