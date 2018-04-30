@@ -1,0 +1,6 @@
+framework module Pods_navesoft {
+  umbrella header "Pods-navesoft-umbrella.h"
+
+  export *
+  module * { export * }
+}
