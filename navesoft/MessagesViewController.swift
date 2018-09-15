@@ -24,8 +24,8 @@ class MessagesViewController:JSQMessagesViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         //automaticallyScrollsToMostRecentMessage = true
-        self.senderId = UIDevice.currentDevice.identifierForVendor?.UUIDString
-        self.senderDisplayName = UIDevice.currentDevice.identifierForVendor?.UUIDString
+        self.senderId = UIDevice.current.identifierForVendor?.uuidString
+        self.senderDisplayName = UIDevice.current.identifierForVendor?.uuidString
         navigationController?.navigationBar.topItem?.title = ""
         self.navigationItem.title = "Mensajes"
         firstFetch = false
@@ -49,7 +49,7 @@ class MessagesViewController:JSQMessagesViewController{
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
@@ -62,7 +62,7 @@ class MessagesViewController:JSQMessagesViewController{
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             var error:NSError?
@@ -82,13 +82,13 @@ class MessagesViewController:JSQMessagesViewController{
                         
                         let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: "OTHER", senderDisplayName: "ADMIN", date: d, text: message)
-                        newData.insertObject(message, atIndex: 0)
+                        newData.insert(message, at: 0)
                     }
                     else{
                         let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: self.senderId, senderDisplayName: self.senderDisplayName, date: d, text: message)
                         
-                        newData.insertObject(message, atIndex: 0)
+                        newData.insert(message, at: 0)
                     }
                     
 
@@ -137,20 +137,20 @@ class MessagesViewController:JSQMessagesViewController{
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
-                print("error=\(error)")
+                print("error=\(String(describing: error))")
                 return
             }
             
             if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
                 print("statusCode should be 200, but is \(httpStatus.statusCode)")
-                print("response = \(response)")
+                print("response = \(String(describing: response))")
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             var error:NSError?
@@ -171,13 +171,13 @@ class MessagesViewController:JSQMessagesViewController{
                         
                         let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: "OTHER", senderDisplayName: "ADMIN", date: d, text: message)
-                        newData.addObject(message)
+                        newData.add(message)
                     }
                     else{
                         let d = Date(timeIntervalSince1970: (Double(time/1000)))
                         let message = JSQMessage(senderId: self.senderId, senderDisplayName: self.senderDisplayName, date: d, text: message)
                         
-                        newData.addObject(message)
+                        newData.add(message)
                     }
                     
                     
@@ -211,7 +211,7 @@ class MessagesViewController:JSQMessagesViewController{
         
         
         
-        messages+=[message]
+        messages+=[message!]
         
         Brain.sharedBrain().addMessageToQueue(message!)
         
@@ -230,16 +230,16 @@ class MessagesViewController:JSQMessagesViewController{
         return self.messages.count
     }
     
-    override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageData! {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageDataForItemAt indexPath: IndexPath!) -> JSQMessageData! {
         let data = self.messages[indexPath.row]
         return data
     }
     
-    override func collectionView(_ collectionView: JSQMessagesCollectionView!, didDeleteMessageAtIndexPath indexPath: IndexPath!) {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, didDeleteMessageAt indexPath: IndexPath!) {
         self.messages.remove(at: indexPath.row)
     }
     
-    override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageBubbleImageDataSource! {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAt indexPath: IndexPath!) -> JSQMessageBubbleImageDataSource! {
         let data = messages[indexPath.row]
         switch(data.senderId) {
         case self.senderId:
@@ -249,7 +249,7 @@ class MessagesViewController:JSQMessagesViewController{
         }
     }
     
-    override func collectionView(_ collectionView: JSQMessagesCollectionView!, avatarImageDataForItemAtIndexPath indexPath: NSIndexPath!) -> JSQMessageAvatarImageDataSource! {
+    override func collectionView(_ collectionView: JSQMessagesCollectionView!, avatarImageDataForItemAt indexPath: IndexPath!) -> JSQMessageAvatarImageDataSource! {
         return nil
     }
     

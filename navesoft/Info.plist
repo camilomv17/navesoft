@@ -46,9 +46,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSLocationAlwaysUsageDescription</key>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>AviZaT Utilizará tu ubicación para determinar la posición del cargamento que registres.</string>
-	<key>NSLocationUsageDescription</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>AviZaT Utilizará tu ubicación para determinar la posición del cargamento que registres.</string>
 	<key>UIBackgroundModes</key>
 	<array>

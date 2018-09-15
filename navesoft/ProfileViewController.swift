@@ -378,7 +378,7 @@ class ProfileViewController: UIViewController,UINavigationBarDelegate, UITableVi
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 return
@@ -391,7 +391,7 @@ class ProfileViewController: UIViewController,UINavigationBarDelegate, UITableVi
                 
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             let user = Brain.sharedBrain().currentUser

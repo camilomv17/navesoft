@@ -19,7 +19,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
     var patios:NSArray?
     var lineas:NSArray?
     override func viewDidLoad() {
-        let navigationBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 64)) // Offset by 20 pixels vertically to take the status bar into account
+        let navigationBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 84)) // Offset by 20 pixels vertically to take the status bar into account
         
         navigationBar.backgroundColor = UIColor.white
         navigationBar.delegate = self
@@ -66,7 +66,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
         request.httpMethod = "POST"
         
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
@@ -79,7 +79,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString!)")
             
             
@@ -91,8 +91,10 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 
                 let lines = json.object(forKey: "lines") as! NSArray
                 
-                self.pickUpView = PickUpRegisterView(frame: CGRect(x: 0,y: 110,width: self.view.bounds.size.width,height: self.view.bounds.size.height - 110),lines: lines,patios: patios)
-                self.deliverRegisterView = DeliverRegisterView(frame: CGRect(x: 0,y: 110,width: self.view.bounds.size.width,height: self.view.bounds.size.height - 110),lines: lines,patios: patios)
+                let ciudades = json.object(forKey: "ciudades") as! NSArray
+                
+                self.pickUpView = PickUpRegisterView(frame: CGRect(x: 0,y: 110,width: self.view.bounds.size.width,height: self.view.bounds.size.height - 110),lines: lines,patios: patios, ciudades: ciudades)
+                self.deliverRegisterView = DeliverRegisterView(frame: CGRect(x: 0,y: 110,width: self.view.bounds.size.width,height: self.view.bounds.size.height - 110),lines: lines,patios: patios,ciudades: ciudades)
                 
                 DispatchQueue.main.async(execute: ({
                     self.view.addSubview(self.pickUpView)
@@ -134,7 +136,10 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 let tamano = dict?.object(forKey: "Tamano") as? String
                 let linea = dict?.object(forKey: "Linea") as? String
                 let patio = dict?.object(forKey: "Patio") as? String
-                
+                let tipo = dict?.object(forKey: "Tipo") as? String
+                let ciudad = dict?.object(forKey: "Ciudad") as? String
+                let ciudadDestino = dict?.object(forKey: "Ciudad Destino") as? String
+                let patioDestino = dict?.object(forKey: "Patio Destino") as? String
                 SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
                 SwiftSpinner.show("Conectando...")
                 
@@ -142,7 +147,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 
                 let lastLocation:CLLocation = Brain.sharedBrain().lastLocation!
                 
-                let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&booking=\(booking!)&tamano=\(tamano!)&line=\(linea!)&patio=\(patio!)&lat=\(lastLocation.coordinate.latitude)&lng=\(lastLocation.coordinate.longitude)";
+                let postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&booking=\(booking!)&tamano=\(tamano!)&line=\(linea!)&patio=\(patio!)&lat=\(lastLocation.coordinate.latitude)&lng=\(lastLocation.coordinate.longitude)&ciudad=\(ciudad!)&ciudaddes=\(ciudadDestino!)&patiodes=\(patioDestino)&tretiro=\(tipo)";
                  self.checkValid(booking!, postString: postString, type: "E", params: dict)
                 
             }
@@ -165,6 +170,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 let tamano = dict?.object(forKey: "Tamano") as? String
                 let linea = dict?.object(forKey: "Linea") as? String
                 let patio = dict?.object(forKey: "Patio") as? String
+                let ciudad = dict?.object(forKey: "Ciudad") as? String
                 
                 if(Brain.isValidContainer(container!) == false){
                     let alertController = UIAlertController(title: "Error", message: "El número del contenedor no es válido", preferredStyle: .alert)
@@ -202,10 +208,10 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 
                 var postString = ""
                 if(segundo != nil){
-                     postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&container=\(container!)&line=\(linea!)&patio=\(patio!)&tamano=\(tamano!)&segundo=\(segundo!)&lat=\(lastLocation.coordinate.latitude)&lng=\(lastLocation.coordinate.longitude)";
+                     postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&container=\(container!)&line=\(linea!)&patio=\(patio!)&tamano=\(tamano!)&segundo=\(segundo!)&lat=\(lastLocation.coordinate.latitude)&lng=\(lastLocation.coordinate.longitude)&ciudad=\(ciudad!)";
                 }
                 else{
-                     postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&container=\(container!)&line=\(linea!)&patio=\(patio!)&tamano=\(tamano!)&lat=\(lastLocation.coordinate.latitude)&lng=\(lastLocation.coordinate.longitude)";
+                     postString = "id=\((Brain.sharedBrain().currentUser?.id)!)&container=\(container!)&line=\(linea!)&patio=\(patio!)&tamano=\(tamano!)&lat=\(lastLocation.coordinate.latitude)&lng=\(lastLocation.coordinate.longitude)&ciudad=\(ciudad!)";
 
                 }
                 self.checkValid(container!, postString: postString, type: "I", params: dict)
@@ -231,7 +237,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 SwiftSpinner.hide()
@@ -248,7 +254,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             do{
@@ -293,6 +299,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
         let segundo = params?.object(forKey: "Contenedor2") as? String
 
         SwiftSpinner.show("Conectando...")
+        
         let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/createDeliverEvent")!)
         request.httpMethod = "POST"
         request.timeoutInterval = 25;
@@ -302,7 +309,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 SwiftSpinner.hide()
@@ -318,7 +325,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 return;
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             do{
@@ -417,6 +424,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
         
         var parameters:String = "http://190.242.124.185:7778/pls/csavchile/RES_API.get_res?parametro1=\(container!)&parametro2=\(empresa!)&parametro3=\(linea!)&parametro4=\(patio!)"
         parameters = parameters.addingPercentEscapes(using: String.Encoding.utf8)!
+        
         let url = URL(string: parameters);
         
         let request = NSMutableURLRequest(url: url!)
@@ -428,7 +436,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
        // let length = CUnsignedLong((data?.length)!)
        // request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
        // request.HTTPBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 SwiftSpinner.hide()
@@ -445,12 +453,13 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 return;
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             do{
                 SwiftSpinner.hide();
-                let xmlDoc = try AEXMLDocument(xmlData: data!);
+                let xmlDoc = try AEXMLDocument(xml: data!);
+              
                 
                 let mensaje:String =  xmlDoc.root["mensaje"].value!;
                 let flag:String = xmlDoc.root["flag"].value!;

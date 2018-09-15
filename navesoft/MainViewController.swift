@@ -51,7 +51,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         locationManager?.delegate = self
         locationManager?.pausesLocationUpdatesAutomatically = false
         locationManager?.requestAlwaysAuthorization()
-        googleMap = GMSMapView.mapWithFrame(CGRect(x: 0,y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height), camera: nil)
+        googleMap = GMSMapView.map(withFrame: CGRect(x: 0,y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height), camera: GMSCameraPosition() )
         self.view.addSubview(googleMap!)
         centerMap()
         
@@ -129,7 +129,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             let length = CUnsignedLong((data?.count)!)
             request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
             request.httpBody = data
-            let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+            let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
                 
                 SwiftSpinner.hide()
                 
@@ -144,7 +144,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                     print("response = \(response)")
                 }
                 
-                let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+                let responseString = String(data: data!, encoding: .utf8)
                 print("responseString = \(responseString)")
                 
                 let mensaje = "Has cancelado tu registro"
@@ -288,7 +288,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             Brain.sharedBrain().lastLocation = lastLocation
         }
         else{
-            if(lastLocation?.distanceFromLocation(location!)<1000){
+            if((lastLocation?.distance(from: location!))!<Double(1000.0)){
                 return;
             }
         }
@@ -337,7 +337,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 return
@@ -348,7 +348,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
         }) 
         task.resume()
@@ -377,7 +377,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             
             SwiftSpinner.hide()
             
@@ -392,7 +392,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
                 var mensaje = ""
@@ -521,7 +521,8 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
             print("responseString = \(responseString!)")
             
             let dict = self.convertStringToDictionary(responseString! as String)
-            let overview = (((dict?.object(forKey: "routes") as? NSArray)![0] as AnyObject).object("overview_polyline") as? NSDictionary)?.object(forKey: "points") as? String
+            let overview = ((((dict?.object(forKey: "routes") as? NSArray)![0] as AnyObject).object(forKey: "overview_polyline")) as? NSDictionary)?.object(forKey: "points") as? String
+            //let overview = (((dict?.object(forKey: "routes") as? NSArray)![0] as AnyObject).object(forKey: "overview_polyline") as? NSDictionary)?.object(forKey: "points") as? String
             Brain.sharedBrain().currentEvent?.polyline = overview
             Brain.sharedBrain().save()
             let pol = GMSPolyline(path: GMSPath(fromEncodedPath: overview!))
@@ -562,7 +563,7 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
         
         let startIndex = self.getClosestIndexPointToPath(path!, location: lastLocation!)
         print(startIndex)
-        for let i in UInt(startIndex+1)...((path?.count())!-1) {
+        for i in UInt(startIndex+1)...((path?.count())!-1) {
             let location1 = path?.coordinate(at: i-1)
             let location2 = path?.coordinate(at: i)
             totalDistance = totalDistance + distance(location1!, to: location2!) as Double
@@ -589,9 +590,9 @@ class MainViewController: UIViewController,GMSMapViewDelegate,CLLocationManagerD
     
     func getClosestIndexPointToPath(_ path: GMSPath,location:CLLocation) -> Int{
         var idx = -1;
-        var minDistance = DBL_MAX;
+        var minDistance = Double.greatestFiniteMagnitude;
         
-        for let i in 0...path.count()-1{
+        for i in 0...path.count()-1{
             let temp = path.coordinate(at: i)
             let dist = distance(location.coordinate, to: temp) as Double?
             if (dist! < minDistance){

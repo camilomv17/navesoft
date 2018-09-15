@@ -1,15 +1,16 @@
 //
-//  SearchViewController.swift
+//  SearchPatioViewController.swift
 //  navesoft
 //
-//  Created by Camilo Mariño on 2/26/16.
-//  Copyright © 2016 Camilo Mariño. All rights reserved.
+//  Created by Camilo Mariño on 8/30/18.
+//  Copyright © 2018 Camilo Mariño. All rights reserved.
 //
 
 import Foundation
+
 import UIKit
 
-class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchResultsUpdating{
+class SearchPatioViewController:UIViewController,UISearchBarDelegate,UITableViewDataSource,UITableViewDelegate,UISearchResultsUpdating{
     
     var tableView:UITableView?
     var data = [String]()
@@ -23,7 +24,7 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         let navigationBar = UINavigationBar(frame: CGRect(x: 0,y: 0,width: self.view.bounds.size.width,height: 64))
         navigationBar.backgroundColor = UIColor.white
         let navigationItem = UINavigationItem()
-        navigationItem.title = "EMPRESAS"
+        navigationItem.title = "PATIOS"
         
         let rightButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(SearchViewController.donePressed))
         navigationItem.rightBarButtonItem = rightButton
@@ -47,7 +48,7 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         self.view.addSubview(tableView!)
         
         
-
+        
         
     }
     
@@ -57,60 +58,64 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
     }
     
     func fetchData(){
-            SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
-            SwiftSpinner.show("Conectando...")
-            let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getCompanies")!)
-            request.httpMethod = "POST"
-        
-            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
-            let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
+        SwiftSpinner.setTitleFont(UIFont.systemFont(ofSize: 15))
+        SwiftSpinner.show("Conectando...")
+        let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/getPatiosCiudad")!)
+        request.httpMethod = "POST"
+        let postString = "ciudad=BAQ";
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
+        request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
+        request.httpBody = data
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
+            
+            SwiftSpinner.hide()
+            guard error == nil && data != nil else {                                                          // check for fundamental networking error
+                print("error=\(error)")
+                return
+            }
+            
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
+                print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                print("response = \(response)")
+            }
+            
+            let responseString = String(data: data!, encoding: .utf8)
+            print("responseString = \(responseString)")
+            
+            var error:NSError?
+            let newData = NSMutableArray()
+            do{
+                let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSArray
+                for element in json {
+                    let dict = element as! NSDictionary
+                    let name = dict.object(forKey: "name") as! String
+                    newData.add(name)
+                    
+                }
+                
+                self.data = NSArray(array:newData) as! [String]
+                DispatchQueue.main.async(execute: {
+                    self.tableView?.reloadData()
+                });
                 
                 SwiftSpinner.hide()
-                guard error == nil && data != nil else {                                                          // check for fundamental networking error
-                    print("error=\(error)")
-                    return
-                }
                 
-                if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
-                    print("statusCode should be 200, but is \(httpStatus.statusCode)")
-                    print("response = \(response)")
-                }
-                
-                let responseString = String(data: data!, encoding: .utf8)
-                print("responseString = \(responseString)")
-                
-                var error:NSError?
-                let newData = NSMutableArray()
-                do{
-                    let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSArray
-                    for element in json {
-                        let dict = element as! NSDictionary
-                        let name = dict.object(forKey: "name") as! String
-                        newData.add(name)
-                        
-                    }
-                    
-                    self.data = NSArray(array:newData) as! [String]
-                    DispatchQueue.main.async(execute: {
-                        self.tableView?.reloadData()
-                    });
-                    
-                    SwiftSpinner.hide()
-                    
-                }
-                catch{
-                    print("FFUUUUUU")
-                }
-            }) 
-            task.resume()
-        }
+            }
+            catch{
+                print("FFUUUUUU")
+            }
+        })
+        task.resume()
+    }
     
     
     func donePressed(){
         displayController?.searchBar.resignFirstResponder()
         if( self.presentingViewController is UINavigationController){
             let  controllers = (self.presentingViewController as! UINavigationController).viewControllers as NSArray
-        
+            
             let parent = controllers.lastObject as! RegisterViewController
             self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected((self.displayController?.searchBar.text)!)})
         }
@@ -118,26 +123,26 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
             let parent = self.presentingViewController as! ProfileViewController
             self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected((self.displayController?.searchBar.text)!)})
         }
-       
+        
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if(self.presentingViewController is UINavigationController){
-        let  controllers = (self.presentingViewController as! UINavigationController).viewControllers as NSArray
-        if(shouldShowSearchResults){
-            let text = searchData[indexPath.row]
-            let parent = controllers.lastObject as! RegisterViewController
-            
-            self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
-            
-        }
-        else{
-            let text = data[indexPath.row]
-            let parent = controllers.lastObject as! RegisterViewController
-            
-            self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
-        }
+            let  controllers = (self.presentingViewController as! UINavigationController).viewControllers as NSArray
+            if(shouldShowSearchResults){
+                let text = searchData[indexPath.row]
+                let parent = controllers.lastObject as! RegisterViewController
+                
+                self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
+                
+            }
+            else{
+                let text = data[indexPath.row]
+                let parent = controllers.lastObject as! RegisterViewController
+                
+                self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
+            }
         }
         else{
             if(shouldShowSearchResults){
@@ -149,7 +154,7 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
             }
             else{
                 let text = data[indexPath.row]
-                 let parent = self.presentingViewController as! ProfileViewController
+                let parent = self.presentingViewController as! ProfileViewController
                 
                 self.presentingViewController?.dismiss(animated: true, completion: {() in parent.setCompanySelected(text)})
             }
@@ -163,7 +168,7 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if shouldShowSearchResults{
-        return (searchData.count)
+            return (searchData.count)
         }
         else{
             return (data.count)
@@ -175,7 +180,7 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         if(cell==nil){
             cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
         }
-
+        
         
         if shouldShowSearchResults {
             cell!.textLabel?.text = searchData[indexPath.row] as? String
@@ -217,6 +222,6 @@ class SearchViewController:UIViewController,UISearchBarDelegate,UITableViewDataS
         
         // Reload the tableview.
         tableView!.reloadData()
-    }
-    
+}
+
 }

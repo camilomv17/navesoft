@@ -37,7 +37,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 let BLUE_COLOR = UIColor(red:(0/255),green:(50/255),blue:(125/255),alpha:1.0)
 let ULTRA_LIGHT_GRAY_COLOR = UIColor(red:(235/255),green:(235/255),blue:(235/255),alpha:1.0)
-let SERVER_IP = "http://avizatcl.navesoft.com"
+let SERVER_IP = "http://avizat.navesoft.com"
 class Brain:NSObject{
     
     static var brain:Brain!
@@ -210,7 +210,7 @@ class Brain:NSObject{
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
 
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
@@ -222,7 +222,7 @@ class Brain:NSObject{
                 print("response = \(response)")
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             var error:NSError?

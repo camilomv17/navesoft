@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		37EE0467649E91A7956286FF /* Pods_navesoftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5674ED433D156F692982A10F /* Pods_navesoftTests.framework */; };
 		5E146B4928C74EAB558B9647 /* Pods_navesoft.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A07A81A93C27D9EDD63274FD /* Pods_navesoft.framework */; };
+		BA0A5A7C2138A55700350E40 /* SearchPatioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0A5A7B2138A55700350E40 /* SearchPatioViewController.swift */; };
 		BA26D9D01CE0431B00F39BE1 /* truck_icon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BA26D9CF1CE0431B00F39BE1 /* truck_icon@3x.png */; };
 		BA26D9D21CE043C400F39BE1 /* truck_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BA26D9D11CE043C400F39BE1 /* truck_icon@2x.png */; };
 		BA4539531C7128F70095B65B /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4539521C7128F70095B65B /* MainViewController.swift */; };
@@ -71,6 +72,7 @@
 		7CC17F1FDFCEC35BBE44BE26 /* Pods_navesoftUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_navesoftUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A07A81A93C27D9EDD63274FD /* Pods_navesoft.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_navesoft.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A84682A38F7E062EB92FA8A1 /* Pods-navesoftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-navesoftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-navesoftTests/Pods-navesoftTests.debug.xcconfig"; sourceTree = "<group>"; };
+		BA0A5A7B2138A55700350E40 /* SearchPatioViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPatioViewController.swift; sourceTree = "<group>"; };
 		BA26D9CF1CE0431B00F39BE1 /* truck_icon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "truck_icon@3x.png"; sourceTree = "<group>"; };
 		BA26D9D11CE043C400F39BE1 /* truck_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "truck_icon@2x.png"; sourceTree = "<group>"; };
 		BA4539521C7128F70095B65B /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				BA4EBC311CC480A200215CE0 /* ProfileViewController.swift */,
 				BAF010B31CF213AB000286C0 /* MessagesViewController.swift */,
 				BAEC93161DAAED7D00D2299F /* SelectViewController.swift */,
+				BA0A5A7B2138A55700350E40 /* SearchPatioViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -549,6 +552,7 @@
 				BA4539621C715B070095B65B /* DeliverRegisterView.swift in Sources */,
 				BAA203371C8070B900285F2A /* RegisterViewController.swift in Sources */,
 				BA4EBC321CC480A200215CE0 /* ProfileViewController.swift in Sources */,
+				BA0A5A7C2138A55700350E40 /* SearchPatioViewController.swift in Sources */,
 				BA4539601C7159040095B65B /* PickUpRegisterView.swift in Sources */,
 				BA7235E21C8D867700CCAB80 /* NavigationView.swift in Sources */,
 				BA92588A1C9A649E0028F2ED /* DataManager.swift in Sources */,

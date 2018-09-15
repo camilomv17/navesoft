@@ -13,7 +13,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
     
     var tableView = UITableView()
      let kTextFieldTag = 3
-    var natural = true
+    var natural = false
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,7 +31,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
         tableView.backgroundColor = ULTRA_LIGHT_GRAY_COLOR
         self.view.addSubview(tableView)
         self.view.backgroundColor = ULTRA_LIGHT_GRAY_COLOR
-        natural = true
+        natural = false
         
         
     }
@@ -127,7 +127,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
                 textField.adjustsFontSizeToFitWidth = true
                 textField.textColor = UIColor.black
                 textField.placeholder = "";
-                textField.text = "Persona Natural"
+                textField.text = "Persona Jurídica"
                 textField.keyboardType = UIKeyboardType.default;
                 textField.autocorrectionType = .no
                 textField.autocapitalizationType = .allCharacters
@@ -161,7 +161,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
                 cell?.selectionStyle = UITableViewCellSelectionStyle.gray
                 //cell?.userInteractionEnabled = false
                 cell?.textLabel!.text = "Empresa:"
-                cell?.textLabel?.textColor = UIColor.lightGray
+                cell?.textLabel?.textColor = BLUE_COLOR
                 
 
             }
@@ -191,7 +191,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
         else{
             if(indexPath.row == 0){
                 self.view.endEditing(true)
-                let t = DataPickerView(frame: self.view.bounds, data: NSArray(array: ["Persona Natural","Persona Jurídica"]), title: "Tipo de Persona")
+                let t = DataPickerView(frame: self.view.bounds, data: NSArray(array: ["Persona Jurídica"]), title: "Tipo de Persona")
                 t.delegate = self
                 t.appear()
             }
@@ -250,7 +250,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
         let type = (self.tableView.cellForRow(at: IndexPath(row: 0, section: 1))?.viewWithTag(kTextFieldTag) as! UITextField).text
         let company =  (self.tableView.cellForRow(at: IndexPath(row: 1, section: 1))?.viewWithTag(kTextFieldTag) as! UITextField).text
         
-        if(cedula == "" || nombre == "" || celular == "" || placas == "" || type == ""){
+        if(cedula == "" || nombre == "" || celular == "" || placas == "" || type == "" || company == ""){
             let actionSheetController: UIAlertController = UIAlertController(title: "Error", message: "Por favor completar todos los campos.", preferredStyle: .alert)
             
             //Create and add the Cancel action
@@ -278,7 +278,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
         let length = CUnsignedLong((data?.count)!)
         request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
         request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             guard error == nil && data != nil else {                                                          // check for fundamental networking error
                 print("error=\(error)")
                 return
@@ -291,7 +291,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
                 
             }
             
-            let responseString = NSString(data: data!, encoding: String.Encoding.utf8)
+            let responseString = String(data: data!, encoding: .utf8)
             print("responseString = \(responseString)")
             
             do{
@@ -332,7 +332,7 @@ class RegisterViewController:UIViewController,UITableViewDataSource,UITextFieldD
         let empresaText = self.tableView.cellForRow(at: IndexPath(row: 1, section: 1))?.viewWithTag(kTextFieldTag) as! UITextField
         if(textField == tipoText){
             textField.resignFirstResponder()
-            let t = DataPickerView(frame: self.view.bounds, data: NSArray(array: ["Persona Natural","Persona Jurídica"]), title: "Tipo de Persona")
+            let t = DataPickerView(frame: self.view.bounds, data: NSArray(array: ["Persona Jurídica"]), title: "Tipo de Persona")
             t.delegate = self
             t.appear()
         }
