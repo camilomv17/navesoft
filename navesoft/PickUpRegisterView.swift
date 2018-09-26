@@ -27,7 +27,14 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     let kPatioPicker = 1
     let kLineaPicker = 2
     let kTamanoPicker = 0
+    let kTipoPicker = 3
+    let kCiudadRetiroPicker = 4;
+    let kCiudadDestinoPicker = 5
+    let kPatioDestinoPicker = 6;
     
+    let kPatioRetiroCellTag = 11
+    let kPatioDestinoCellTag = 12
+
     var tableView = UITableView()
     var pickerCellRowHeight = 162.0
     var datePickerIndexPath:IndexPath?
@@ -41,15 +48,27 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     var patioPicked = ""
     var linePicked = ""
     var tamanoPicked = ""
+    var tipoPicked = "";
+    var ciudadRetiroPicked = "";
+    var ciudadDestinoPicked = "";
+    var patioDestinoPicked = "";
     var selectedPatio = 0;
+    var selectedPatioDestino = 0;
     
     var dataTamaños:NSArray?
-    init(frame: CGRect,lines:NSArray,patios:NSArray) {
+    var dataTipos:NSArray?
+    var dataCiudades:NSArray?
+    var dataPatiosRetiro:NSMutableArray?
+    var dataPatiosDestino:NSMutableArray?
+    
+    init(frame: CGRect,lines:NSArray,patios:NSArray, ciudades:NSArray) {
         super.init(frame: frame)
         currentPicker = 0
         selectedPatio = 0;
+        selectedPatioDestino = 0;
         self.dataLines = lines;
-        self.dataPatios = patios
+        self.dataPatios = patios;
+        self.dataCiudades = ciudades;
         tableView = UITableView(frame: self.bounds, style: .grouped)
         tableView.dataSource = self;
         tableView.delegate = self;
@@ -60,6 +79,11 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
       //  NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardHidden:", name: UIKeyboardDidHideNotification, object: nil)
         
         dataTamaños = ["20 (un contenedor)","20 (dos contenedores)","40"]
+        dataTipos = ["EXPO","REPO"];
+        
+        let firstCity = (dataCiudades?.object(at: 0) as! NSDictionary).value(forKey: "code") as! String;
+        filterDataPatios(codigoCiudad: firstCity, picker: kCiudadDestinoPicker, updating: false)
+        filterDataPatios(codigoCiudad: firstCity, picker: kCiudadRetiroPicker, updating: false)
         
     }
     
@@ -71,6 +95,43 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
         fatalError("init(coder:) has not been implemented")
     }
     
+    func filterDataPatios(codigoCiudad:String, picker: Int, updating: Bool){
+        if(picker == kCiudadRetiroPicker){
+            dataPatiosRetiro = NSMutableArray();
+            
+            for patio in dataPatios! {
+                let temp = patio as! NSDictionary
+                if (temp.object(forKey: "city") as! String == codigoCiudad ){
+                    dataPatiosRetiro?.add(temp);
+                }
+            }
+            if(updating){
+            let index = IndexPath(item: 6, section: 0)
+            let cell = self.tableView.cellForRow(at: index) as! UITableViewCell
+            cell.detailTextLabel?.text = (dataPatiosRetiro?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String;
+                selectedPatio = 0
+            }
+        }
+        else{
+            dataPatiosDestino = NSMutableArray();
+            
+            for patio in dataPatios! {
+                let temp = patio as! NSDictionary
+                if (temp.object(forKey: "city") as! String == codigoCiudad ){
+                    dataPatiosDestino?.add(temp);
+                }
+            }
+            if(updating){
+            let index = IndexPath(item: 8, section: 0)
+            let cell = self.tableView.cellForRow(at: index) as! UITableViewCell
+            cell.detailTextLabel?.text = (dataPatiosDestino?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String;
+                selectedPatioDestino = 0;
+            }
+           
+        }
+       
+    }
+    
     func datePickerIsShown() ->Bool{
         return self.datePickerIndexPath != nil
     }
@@ -78,6 +139,7 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     func hideExistingPicker(){
         self.tableView.deleteRows(at: [IndexPath(row: (self.datePickerIndexPath?.row)!, section: 0)], with: .fade)
         self.datePickerIndexPath = nil
+      
     }
     
     func calculateInexPathForNewPicker(_ selectedIndexPath:IndexPath) ->IndexPath
@@ -147,22 +209,52 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
                 cell?.textLabel!.text = "No. de Booking"
                 
             }
+                
             else if(indexPath.row == 1){
+                cell?.textLabel?.text = "Tipo"
+                cell?.detailTextLabel?.text = dataTipos![0] as? String
+                self.tipoPicked = (cell?.detailTextLabel?.text)!
+            }
+                
+            else if(indexPath.row == 2){
                 cell?.textLabel?.text = "Tamaño"
                 cell?.detailTextLabel?.text = dataTamaños![0] as? String
                 self.tamanoPicked = (cell?.detailTextLabel?.text)!
             }
-            else if(indexPath.row == 2){
+            else if(indexPath.row == 3){
                 cell?.textLabel?.text = "Linea Naviera"
                 cell?.detailTextLabel?.text = (dataLines?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
                 self.linePicked = (cell?.detailTextLabel?.text)!
                 
             }
-            else if(indexPath.row == 3){
+            else if(indexPath.row == 4){
+                
+                cell?.textLabel?.text = "Ciudad Retiro"
+                cell?.detailTextLabel?.text = (dataCiudades?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
+                self.ciudadRetiroPicked = (cell?.detailTextLabel?.text)!
+                
+            }
+            else if(indexPath.row == 5){
                 
                 cell?.textLabel?.text = "Patio"
-                cell?.detailTextLabel?.text = (dataPatios?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
+                cell?.detailTextLabel?.text = (dataPatiosRetiro?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
                 self.patioPicked = (cell?.detailTextLabel?.text)!
+                cell?.tag = kPatioRetiroCellTag
+                
+            }
+            else if(indexPath.row == 6){
+                
+                cell?.textLabel?.text = "Ciudad Destino"
+                cell?.detailTextLabel?.text = (dataCiudades?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
+                self.ciudadDestinoPicked = (cell?.detailTextLabel?.text)!
+                
+            }
+            else if(indexPath.row == 7){
+                
+                cell?.textLabel?.text = "Patio Destino"
+                  cell?.detailTextLabel?.text = (dataPatiosDestino?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
+                 self.patioDestinoPicked = (cell?.detailTextLabel?.text)!
+                cell?.tag = kPatioDestinoPicker;
                 
             }
             
@@ -176,7 +268,7 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     }
     
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var numberOfRows = 4
+        var numberOfRows = 8
         if(self.datePickerIsShown()){
             numberOfRows = numberOfRows+1;
         }
@@ -201,17 +293,30 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
                 self.tableView.endUpdates()
                 return
             }
-            if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 1 ){
+            if(indexPath.row > 0  ){
                 self.endEditing(true)
                 let newPickerIndexPath = self.calculateInexPathForNewPicker(indexPath)
                 self.showNewPickerAtIndex(newPickerIndexPath)
                 
+                
                 if(indexPath.row == 1){
+                    currentPicker = kTipoPicker
+                }
+                else if(indexPath.row == 2){
                     currentPicker = kTamanoPicker
                 }
-                
-                else if(indexPath.row == 2){
+                    
+                else if(indexPath.row == 3){
                     currentPicker = kLineaPicker
+                }
+                else if(indexPath.row == 4){
+                    currentPicker = kCiudadRetiroPicker
+                }
+                else if(indexPath.row == 6){
+                    currentPicker = kCiudadDestinoPicker
+                }
+                else if(indexPath.row == 7){
+                    currentPicker = kPatioDestinoPicker;
                 }
                 else{
                     currentPicker = kPatioPicker
@@ -219,6 +324,7 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
                 self.patioPicker?.reloadAllComponents()
                 self.datePickerIndexPath = IndexPath(row: newPickerIndexPath.row + 1, section: 0)
             }
+                
             else{
                 let cell = self.tableView.cellForRow(at: indexPath)
                 cell?.viewWithTag(kTextFieldChildTag)?.becomeFirstResponder()
@@ -263,11 +369,21 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     
     open func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if(currentPicker == kPatioPicker){
-            return (dataPatios?.count)!
+            return (dataPatiosRetiro?.count)!
+        }
+        else if(currentPicker == kTipoPicker){
+            return (dataTipos?.count)!
         }
         else if(currentPicker == kLineaPicker){
             return (dataLines?.count)!
         }
+        else if (currentPicker == kCiudadDestinoPicker || currentPicker == kCiudadRetiroPicker){
+            return (dataCiudades?.count)!
+        }
+        else if(currentPicker == kPatioDestinoPicker){
+            return (dataPatiosDestino?.count)!
+        }
+            
         else
         {
             return (dataTamaños?.count)!
@@ -277,7 +393,7 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     
     open func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if(currentPicker == kPatioPicker){
-            let dict = dataPatios?.object(at: row) as! NSDictionary
+            let dict = dataPatiosRetiro?.object(at: row) as! NSDictionary
             return dict.object(forKey: "name") as? String
             
         }
@@ -285,8 +401,20 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
             let dict = dataLines?.object(at: row) as! NSDictionary
             return dict.object(forKey: "code") as? String
         }
-        else{
+        else if(currentPicker == kTipoPicker){
+            return dataTipos?.object(at: row) as? String
+        }
+        else if(currentPicker == kTamanoPicker){
             return dataTamaños?.object(at: row) as? String
+        }
+        else if(currentPicker == kPatioDestinoPicker){
+            let dict = dataPatiosDestino?.object(at: row) as! NSDictionary
+            return dict.object(forKey: "name") as? String
+            
+        }
+        else{
+            let dict = dataCiudades?.object(at: row) as! NSDictionary
+            return dict.object(forKey: "name") as? String
         }
     }
     
@@ -296,27 +424,59 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
     
     open func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if(currentPicker == kPatioPicker){
-            let dict = dataPatios?.object(at: row) as! NSDictionary
-            self.patioPicked = (dict.object(forKey: "name") as? String)!
+            let dict = dataPatiosRetiro?.object(at: row) as! NSDictionary
+            self.patioPicked = (dict.object(forKey: "code") as? String)!
             selectedPatio = row;
-            let cell = self.tableView.cellForRow(at: IndexPath(row: 3, section: 0))
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 5, section: 0))
             cell?.detailTextLabel?.text = self.patioPicked
             print(self.patioPicked)
         }
         else if(currentPicker == kLineaPicker){
             let dict = dataLines?.object(at: row) as! NSDictionary
             self.linePicked = (dict.object(forKey: "code") as? String)!
-            let cell = self.tableView.cellForRow(at: IndexPath(row: 2, section: 0))
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 3, section: 0))
             cell?.detailTextLabel?.text = self.linePicked
             print(self.linePicked)
         }
-        else{
-            self.tamanoPicked = (dataTamaños?.object(at: row) as? String)!
+        else if(currentPicker == kTipoPicker){
+            self.tipoPicked = (dataTipos?.object(at: row) as? String)!
             let cell = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0))
+            cell?.detailTextLabel?.text = self.tipoPicked
+            print(self.tipoPicked)
+            
+            
+        }
+        else if(currentPicker == kTamanoPicker){
+            self.tamanoPicked = (dataTamaños?.object(at: row) as? String)!
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 2, section: 0))
             cell?.detailTextLabel?.text = self.tamanoPicked
             print(self.tamanoPicked)
-
+        }
+        else if(currentPicker == kCiudadRetiroPicker){
+            let dict = dataCiudades?.object(at: row) as! NSDictionary
+            self.ciudadRetiroPicked = (dict.object(forKey: "name") as? String)!
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 4, section: 0))
+            cell?.detailTextLabel?.text = self.ciudadRetiroPicked
+            print(self.ciudadRetiroPicked)
+            self.filterDataPatios(codigoCiudad: (dict.object(forKey: "code") as? String)!, picker: currentPicker, updating: true)
             
+        }
+        else if(currentPicker == kCiudadDestinoPicker){
+            let dict = dataCiudades?.object(at: row) as! NSDictionary
+            self.ciudadDestinoPicked = (dict.object(forKey: "name") as? String)!
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 6, section: 0))
+            cell?.detailTextLabel?.text = self.ciudadDestinoPicked
+            print(self.ciudadDestinoPicked)
+            self.filterDataPatios(codigoCiudad: (dict.object(forKey: "code") as? String)!, picker: currentPicker, updating: true)
+            
+        }
+        else if(currentPicker == kPatioDestinoPicker){
+            let dict = dataPatiosDestino?.object(at: row) as! NSDictionary
+            self.patioDestinoPicked = (dict.object(forKey: "code") as? String)!
+            selectedPatioDestino = row;
+            let cell = self.tableView.cellForRow(at: IndexPath(row: 7, section: 0))
+            cell?.detailTextLabel?.text = self.patioDestinoPicked
+            print(self.patioDestinoPicked)
         }
     }
     
@@ -372,9 +532,47 @@ open class PickUpRegisterView: UIView, UITableViewDelegate,UITableViewDataSource
             info.setObject(patio, forKey: "Patio" as NSCopying)
         }
         
-        let dict = dataPatios?.object(at: selectedPatio) as! NSDictionary
+        let tipo = tipoPicked
+        
+        if(tipo == ""){
+            return nil
+        }
+        else{
+            info.setObject(tipo, forKey: "Tipo" as NSCopying)
+        }
+        
+        let ciudad = self.ciudadRetiroPicked
+        if(ciudad == ""){
+            
+            return nil
+        }
+        else{
+            info.setObject(ciudad, forKey: "Ciudad" as NSCopying)
+        }
+        
+        let ciudadDestino = self.ciudadDestinoPicked
+        
+        if(ciudadDestino == ""){
+            return nil
+        }
+        else {
+            info.setObject(ciudadDestino, forKey: "Ciudad Destino" as NSCopying);
+        }
+        
+        let patioDestino = self.patioDestinoPicked
+        if(patioDestino == ""){
+            return nil
+        }
+        else{
+            info.setObject(patioDestino, forKey: "Patio Destino" as NSCopying);
+        }
+        let dict = dataPatiosRetiro?.object(at: selectedPatio) as! NSDictionary
         let patioCode = (dict.object(forKey: "code") as? String)!
         info.setObject(patioCode, forKey: "patioCode" as NSCopying);
+        
+        let dict2 = dataPatiosDestino?.object(at: selectedPatioDestino) as! NSDictionary
+        let patioCode2 = (dict2.object(forKey: "code") as? String)!
+        info.setObject(patioCode2, forKey: "patioCodeDestino" as NSCopying);
         
         return info
     }

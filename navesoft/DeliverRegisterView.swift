@@ -45,6 +45,9 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
     let kTextFieldChildTag = 10
     let kSwitchTag = 11
     
+    let kTextFieldChildTag2 = 12
+    let kTextFieldChildTagRetorno = 13
+    
     var dataLines:NSArray?
     var dataPatios:NSArray?
     var currentPicker = 0
@@ -55,7 +58,9 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
     var selectedPatio = 0;
     var extraContainer = false
     var dobleEvento = false
-    
+    var contenedor = ""
+    var contenedor2 = ""
+    var booking = ""
     //Evento de regreso
      var tipoPicked = "";
     var ciudadDestinoPicked = "";
@@ -78,6 +83,9 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
         retiroSwitchIsOn = false;
         dobleEvento = false
         selectedPatio = 0;
+        contenedor = ""
+        contenedor2 = ""
+        booking = ""
         currentSectionShowingPicker = 0;
         self.dataLines = lines;
         self.dataPatios = patios;
@@ -94,6 +102,12 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
         let firstCity = (dataCiudades?.object(at: 0) as! NSDictionary).value(forKey: "code") as! String;
         filterDataPatios(codigoCiudad: firstCity, picker: kCiudadPicker, updating: false)
         filterDataPatios(codigoCiudad: firstCity, picker: kCiudadDestinoPicker, updating: false)
+        self.tableView.register(UITableViewCell.classForKeyedArchiver(), forCellReuseIdentifier: "cell")
+        self.tableView.register(UITableViewCell.classForKeyedArchiver(), forCellReuseIdentifier: "cell2")
+        
+        
+
+
 
     }
     
@@ -137,11 +151,15 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
                 }
             }
             if(updating){
-               
-                let index = IndexPath(item: 6, section: 1)
-                let cell = self.tableView.cellForRow(at: index) as! UITableViewCell
-                cell.detailTextLabel?.text = (dataPatiosDestino?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String;
-                selectedPatioDestino = 0
+                
+                    let index = IndexPath(item: 6, section: 1)
+                    // self.tableView.scrollToRow(at: index, at: .top, animated: true)
+                     let cell = self.tableView.cellForRow(at: index) as? UITableViewCell
+                cell?.detailTextLabel?.text = (dataPatiosDestino?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String;
+                    selectedPatioDestino = 0
+                
+                
+              
             }
         }
        
@@ -199,50 +217,69 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
             return cell!
         }
         else{
-            var cell = self.tableView.dequeueReusableCell(withIdentifier: "cell")
-            if(cell==nil){
-                cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: "cell")
-            }
-            cell?.accessoryType = .none
-            cell?.tag = indexPath.row
+            var cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: "cell")
+            
+            cell.accessoryType = .none
+            cell.tag = indexPath.row
             if(indexPath.row == 0){
+                
+                if ((cell.viewWithTag(kTextFieldChildTag)) == nil){
+
                 let textField = UITextField(frame: CGRect(x: 140, y: 7.5, width: 185, height: 30))
                 textField.adjustsFontSizeToFitWidth = true
                 textField.textColor = UIColor.black
-                textField.placeholder = "";
                 textField.keyboardType = UIKeyboardType.default;
                 textField.autocorrectionType = .no
+                textField.text = self.contenedor
                 textField.returnKeyType = .done;
                 textField.backgroundColor = UIColor.white
                 textField.textAlignment = .left
                 textField.delegate = self
                 textField.tag = kTextFieldChildTag
                 
-                cell?.contentView.addSubview(textField)
+                cell.contentView.addSubview(textField)
+                    textField.addTarget(self, action: #selector(textFieldDidChange(textField:)), for: .editingChanged)
                 
-                cell?.textLabel!.text = "N. Contenedor  "
+                cell.textLabel!.text = "N. Contenedor  "
+                    
+                }
                 
             }
             var extraCell = 0
             if(extraContainer){
                 extraCell = 1
                 if(indexPath.row == 1){
+                    
+                    if ((cell.viewWithTag(kTextFieldChildTag2)) == nil){
+
                     let textField = UITextField(frame: CGRect(x: 140, y: 7.5, width: 185, height: 30))
                     textField.adjustsFontSizeToFitWidth = true
                     textField.textColor = UIColor.black
-                    textField.placeholder = "";
                     textField.keyboardType = UIKeyboardType.default;
                     textField.autocorrectionType = .no
                     textField.returnKeyType = .done;
+                        textField.text = contenedor2
                     textField.backgroundColor = UIColor.white
                     textField.textAlignment = .left
                     textField.delegate = self
-                    textField.tag = kTextFieldChildTag
+                    textField.tag = kTextFieldChildTag2
+                         textField.addTarget(self, action: #selector(textFieldDidChange(textField:)), for: .editingChanged)
                     
-                    cell?.contentView.addSubview(textField)
+                    cell.contentView.addSubview(textField)
+                    cell.detailTextLabel?.text = nil
                     
-                    cell?.textLabel!.text = "N. Contenedor 2  "
+                    cell.textLabel!.text = "N. Contenedor 2  "
+                        
+                    }
                     
+                }
+            }
+            
+           let index = self.datePickerIndexPath
+            
+            if(indexPath.section == index?.section){
+                if(index?.row<indexPath.row){
+                    extraCell = extraCell + 1;
                 }
             }
             
@@ -250,40 +287,40 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
             
                 
             if(indexPath.row == 1+extraCell){
-                cell?.textLabel?.text = "Tamaño"
-                cell?.detailTextLabel?.text = dataTamaños![0] as? String
-                self.tamanoPicked = (cell?.detailTextLabel?.text)!
+                cell.textLabel?.text = "Tamaño"
+                cell.detailTextLabel?.text = dataTamaños![0] as? String
+                self.tamanoPicked = (cell.detailTextLabel?.text)!
             }
             else if(indexPath.row == 2+extraCell){
-                cell?.textLabel?.text = "Linea Naviera"
-                cell?.detailTextLabel?.text = (dataLines?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
-                self.linePicked = (cell?.detailTextLabel?.text)!
+                cell.textLabel?.text = "Linea Naviera"
+                cell.detailTextLabel?.text = (dataLines?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
+                self.linePicked = (cell.detailTextLabel?.text)!
                 
             }
                 
             else if(indexPath.row == 3+extraCell){
                 
-                cell?.textLabel?.text = "Ciudad"
-                cell?.detailTextLabel?.text = (dataCiudades?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
-                self.ciudadPicked = (cell?.detailTextLabel?.text)!
+                cell.textLabel?.text = "Ciudad"
+                cell.detailTextLabel?.text = (dataCiudades?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
+                self.ciudadPicked = (cell.detailTextLabel?.text)!
                 
             }
             else if(indexPath.row == 4+extraCell){
                 
-                cell?.textLabel?.text = "Patio"
-                cell?.detailTextLabel?.text = (dataPatiosDevolucion?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
-                self.patioPicked = (cell?.detailTextLabel?.text)!
+                cell.textLabel?.text = "Patio"
+                cell.detailTextLabel?.text = (dataPatiosDevolucion?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
+                self.patioPicked = (cell.detailTextLabel?.text)!
                 
             }
             else if(indexPath.row == 5+extraCell){
-                cell?.textLabel?.text = "Retiro"
+                cell.textLabel?.text = "Retiro"
                 let switchView = UISwitch(frame: .zero)
                 switchView.setOn(false, animated: true)
                 switchView.tag = kSwitchTag
                 switchView.addTarget(self, action: #selector(self.switchChanged(_:)), for: .valueChanged)
-                cell?.accessoryView = switchView
+                cell.accessoryView = switchView
             }
-            return cell!
+            return cell
         }
         
         
@@ -306,66 +343,80 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
                 return cell!
             }
             else{
-                var cell = self.tableView.dequeueReusableCell(withIdentifier: "cell2")
-                if(cell==nil){
-                    cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: "cell2")
-                }
-                cell?.accessoryType = .none
-                cell?.tag = indexPath.row
+                 var cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: "cell")
+                
+                cell.accessoryType = .none
+                cell.tag = indexPath.row
                 if(indexPath.row == 0){
+                    
+                    
+                    if ((cell.viewWithTag(kTextFieldChildTagRetorno)) == nil){
                     let textField = UITextField(frame: CGRect(x: 140, y: 7.5, width: 185, height: 30))
                     textField.adjustsFontSizeToFitWidth = true
                     textField.textColor = UIColor.black
-                    textField.placeholder = "";
+                   
                     textField.keyboardType = UIKeyboardType.default;
                     textField.autocorrectionType = .no
                     textField.returnKeyType = .done;
+                    textField.text = booking;
                     textField.backgroundColor = UIColor.white
                     textField.textAlignment = .left
                     textField.delegate = self
-                    textField.tag = kTextFieldChildTag
+                    textField.tag = kTextFieldChildTagRetorno
                     
-                    cell?.contentView.addSubview(textField)
+                        
+                    textField.addTarget(self, action: #selector(textFieldDidChange(textField:)), for: .editingChanged)
+                        
+                    cell.contentView.addSubview(textField)
                     
-                    cell?.textLabel!.text = "Booking/Reserva  "
-                    
-                }
-
-                if(indexPath.row == 1){
-                    cell?.textLabel?.text = "Tipo"
-                    cell?.detailTextLabel?.text = dataTipos![0] as? String
-                    self.tipoPicked = (cell?.detailTextLabel?.text)!
-                }
-                else if(indexPath.row == 2){
-                    cell?.textLabel?.text = "Tamaño"
-                    cell?.detailTextLabel?.text = dataTamaños![0] as? String
-                    self.tamanoDestinoPicked = (cell?.detailTextLabel?.text)!
-                    
-                }
-                    
-                else if(indexPath.row == 3){
-                    cell?.textLabel?.text = "Linea Destino"
-                    cell?.detailTextLabel?.text = (dataLines?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
-                    self.lineaDestinoPicked = (cell?.detailTextLabel?.text)!
-                    
-                }
-                    
-                else if(indexPath.row == 4){
-                    
-                    cell?.textLabel?.text = "Ciudad Destino"
-                    cell?.detailTextLabel?.text = (dataCiudades?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
-                    self.ciudadDestinoPicked = (cell?.detailTextLabel?.text)!
-                    
-                }
-                else if(indexPath.row == 5){
-                    
-                    cell?.textLabel?.text = "Patio Destino"
-                    cell?.detailTextLabel?.text = (dataPatiosDestino?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
-                    self.patioDestinoPicked = (cell?.detailTextLabel?.text)!
+                    cell.textLabel!.text = "Booking/Reserva  "
+                    }
                     
                 }
                 
-                return cell!
+                let index = self.datePickerIndexPath
+                var extraCell = 0
+                if(indexPath.section == index?.section){
+                    if(index?.row<indexPath.row){
+                        extraCell = extraCell + 1;
+                    }
+                }
+
+                if(indexPath.row == 1 + extraCell){
+                    cell.textLabel?.text = "Tipo"
+                    cell.detailTextLabel?.text = dataTipos![0] as? String
+                    self.tipoPicked = (cell.detailTextLabel?.text)!
+                }
+                else if(indexPath.row == 2 + extraCell){
+                    cell.textLabel?.text = "Tamaño"
+                    cell.detailTextLabel?.text = dataTamaños![0] as? String
+                    self.tamanoDestinoPicked = (cell.detailTextLabel?.text)!
+                    
+                }
+                    
+                else if(indexPath.row == 3 + extraCell){
+                    cell.textLabel?.text = "Linea Destino"
+                    cell.detailTextLabel?.text = (dataLines?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
+                    self.lineaDestinoPicked = (cell.detailTextLabel?.text)!
+                    
+                }
+                    
+                else if(indexPath.row == 4 + extraCell){
+                    
+                    cell.textLabel?.text = "Ciudad Destino"
+                    cell.detailTextLabel?.text = (dataCiudades?.object(at: 0) as! NSDictionary).object(forKey: "name") as? String
+                    self.ciudadDestinoPicked = (cell.detailTextLabel?.text)!
+                    
+                }
+                else if(indexPath.row == 5 + extraCell){
+                    
+                    cell.textLabel?.text = "Patio Destino"
+                    cell.detailTextLabel?.text = (dataPatiosDestino?.object(at: 0) as! NSDictionary).object(forKey: "code") as? String
+                    self.patioDestinoPicked = (cell.detailTextLabel?.text)!
+                    
+                }
+                
+                return cell
             }
             
         }
@@ -415,8 +466,32 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    @objc func textFieldDidChange(textField: UITextField){
         
+        print("Text changed")
+        switch textField.tag {
+        case kTextFieldChildTag:
+        self.contenedor = textField.text!;
+            
+            break
+            
+        case kTextFieldChildTag2:
+            self.contenedor2 = textField.text!
+            break;
+        case kTextFieldChildTagRetorno:
+            self.booking = textField.text!
+            break;
+            
+            
+        default:
+            break;
+        }
+        
+        
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+       // self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         
         self.tableView.beginUpdates()
         
@@ -504,6 +579,7 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
             }
         }
         tableView.deselectRow(at: indexPath, animated: true)
+        
         
         self.tableView.endUpdates()
         
@@ -711,22 +787,22 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
         }
         let info = NSMutableDictionary()
         
-        let contenedor = (self.tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.viewWithTag(kTextFieldChildTag) as! UITextField).text
+        let contenedor = self.contenedor
         
         if(contenedor == ""){
             return nil;
         }
         else{
-            info.setObject(contenedor!, forKey: "Contenedor" as NSCopying)
+            info.setObject(contenedor, forKey: "Contenedor" as NSCopying)
         }
         
         if(extraContainer){
-            let contenedor2 = (self.tableView.cellForRow(at: IndexPath(row: 1, section: 0))?.viewWithTag(kTextFieldChildTag) as! UITextField).text
+            let contenedor2 = self.contenedor2
             if(contenedor2 == ""){
                 return nil;
             }
             else{
-                info.setObject(contenedor2!, forKey: "Contenedor2" as NSCopying)
+                info.setObject(contenedor2, forKey: "Contenedor2" as NSCopying)
             }
         }
         
@@ -766,17 +842,17 @@ class DeliverRegisterView: UIView,UITableViewDelegate,UITableViewDataSource,UITe
         else{
             info.setObject(ciudad, forKey: "Ciudad" as NSCopying)
         }
-        
+         info.setObject(retiroSwitchIsOn, forKey: "RetiroSwitch" as NSCopying)
         if(retiroSwitchIsOn){
             
-            info.setObject(retiroSwitchIsOn, forKey: "RetiroSwitch" as NSCopying)
+           
             
-           let bookingRetiro = (self.tableView.cellForRow(at: IndexPath(row: 0, section: 1))?.viewWithTag(kTextFieldChildTag) as! UITextField).text
+           let bookingRetiro = self.booking
             if(bookingRetiro == ""){
                 return nil
             }
             else{
-                info.setObject(bookingRetiro!, forKey: "BookingRetiro" as NSCopying)
+                info.setObject(bookingRetiro, forKey: "BookingRetiro" as NSCopying)
                 
             }
             

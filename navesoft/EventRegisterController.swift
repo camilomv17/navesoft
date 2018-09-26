@@ -205,6 +205,7 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 
                 let lastLocation:CLLocation = Brain.sharedBrain().lastLocation!
 
+               
                 
                 var postString = ""
                 if(segundo != nil){
@@ -297,8 +298,10 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
         let linea = params?.object(forKey: "Linea") as? String
         let patio = params?.object(forKey: "Patio") as? String
         let segundo = params?.object(forKey: "Contenedor2") as? String
-
+        let retiroOn = params?.object(forKey: "RetiroSwitch") as? Bool
         SwiftSpinner.show("Conectando...")
+        
+        
         
         let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/createDeliverEvent")!)
         request.httpMethod = "POST"
@@ -334,23 +337,40 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                 let patioInfo = json.object(forKey: "patio") as! NSDictionary
                 
                 let eventId = json.object(forKey: "eventId") as! String
-                
-                let event = Event()
-                event._id = eventId
-                
-                event.type = "deliver"
-                event.trailer = container
-                event.linea = linea
-                event.patio = patio
-                event.segundo = segundo
-                event.destino = patioInfo.object(forKey: "position") as? String
-                Brain.sharedBrain().currentEvent = event
-                Brain.sharedBrain().save()
-                
                 SwiftSpinner.hide()
-                DispatchQueue.main.async(execute: {
-                    self.presentingViewController?.dismiss(animated: true, completion: nil)
-                });
+
+                if(retiroOn!){
+                    
+                    params?.setValue(eventId, forKey: "eventId")
+                    let booking = params?.object(forKey: "BookingRetiro") as? String
+                    let tipoRetiro = params?.object(forKey: "TipoRetiro") as? String
+                    let tamanoRetiro = params?.object(forKey: "TamanoRetiro")as? String
+                    let lineaDestino = params?.object(forKey: "LineaDestino") as? String
+                    let ciudadDestino = params?.object(forKey: "CiudadDestino") as? String
+                    let patioDestino = params?.object(forKey: "PatioDestino") as? String
+                     let postString2 = "id=\((Brain.sharedBrain().currentUser?.id)!)&booking=\(booking!)&tamano=\(tamanoRetiro!)&line=\(lineaDestino!)&patio=\(patio!)&ciudaddes=\(ciudadDestino!)&patiodes=\(patioDestino!)&tretiro=\(tipoRetiro!)";
+                    
+                    self.checkValid(booking!, postString: postString2, type: "E2", params: params)
+                }
+                else{
+                    let event = Event()
+                    event._id = eventId
+                    
+                    event.type = "deliver"
+                    event.trailer = container
+                    event.linea = linea
+                    event.patio = patio
+                    event.segundo = segundo
+                    event.destino = patioInfo.object(forKey: "position") as? String
+                    Brain.sharedBrain().currentEvent = event
+                    Brain.sharedBrain().save()
+                    
+                    DispatchQueue.main.async(execute: {
+                        self.presentingViewController?.dismiss(animated: true, completion: nil)
+                    });
+                }
+                
+                
                 
                 
             }
@@ -362,6 +382,83 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
             }
         }) 
         task.resume()
+    }
+    
+    func sendNestedPickUpEvent(_ postString:String,dict:NSDictionary?){
+        //let booking = dict?.object(forKey: "Booking") as? String
+        //let linea = dict?.object(forKey: "Linea") as? String
+        //let patio = dict?.object(forKey: "Patio") as? String
+        
+        let container = dict?.object(forKey: "Contenedor") as? String
+        let linea = dict?.object(forKey: "Linea") as? String
+        let patio = dict?.object(forKey: "Patio") as? String
+        let segundo = dict?.object(forKey: "Contenedor2") as? String
+        
+        let request = NSMutableURLRequest(url: URL(string: "\(Brain.sharedBrain().serverIp!)/api/call/createPickUpEvent2")!)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 25;
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Current-Type")
+        let data = postString.data(using: String.Encoding.utf8)
+        let length = CUnsignedLong((data?.count)!)
+        request.setValue(String(format: "%lu", arguments: [length]), forHTTPHeaderField: "Content-Length")
+        request.httpBody = data
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
+            guard error == nil && data != nil else {                                                          // check for fundamental networking error
+                print("error=\(error)")
+                SwiftSpinner.hide()
+                self.showNetError();
+                return
+            }
+            
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
+                print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                print("response = \(response)")
+                SwiftSpinner.hide()
+                self.showNetError()
+                
+                
+            }
+            
+            let responseString = String(data: data!, encoding: .utf8)
+            print("responseString = \(responseString)")
+            
+            do{
+                let json = try JSONSerialization.jsonObject(with: data!, options:JSONSerialization.ReadingOptions.mutableContainers) as! NSDictionary
+                
+                let patioInfo = json.object(forKey: "patio") as! NSDictionary
+                
+                let event = Event()
+                event._id = dict?.object(forKey: "eventId") as? String
+                
+                event.type = "deliver"
+                event.trailer = container
+                event.linea = linea
+                event.patio = patio
+                event.segundo = segundo
+                event.destino = patioInfo.object(forKey: "position") as? String
+                Brain.sharedBrain().currentEvent = event
+                Brain.sharedBrain().save()
+                
+                
+                SwiftSpinner.hide()
+                DispatchQueue.main.async(execute: {
+                    self.presentingViewController?.dismiss(animated: true, completion: nil)
+                });
+                
+                
+            }
+            catch{
+                print("FFUUUUUU")
+                SwiftSpinner.hide()
+                self.showNetError()
+                
+            }
+        })
+        task.resume()
+        
+        
+            
+        
     }
     
     
@@ -408,6 +505,12 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
             patio = params?.object(forKey: "patioCode") as? String;
             container = booking;
             
+        }
+        else if(type == "E2"){
+            empresa = Brain.sharedBrain().serverCode;
+            linea = params?.object(forKey: "LineaDestino") as? String;
+            patio = params?.object(forKey: "patioCode") as? String;
+            container = booking;
         }
         else{
             empresa = Brain.sharedBrain().serverCode;
@@ -474,6 +577,9 @@ class EventRegisterController:UIViewController,UINavigationBarDelegate {
                             }
                             else if(type == "E"){
                                 self.postPickUpEvent(postString, params: params);
+                            }
+                            else {
+                                self.sendNestedPickUpEvent(postString, dict: params)
                             }
                         
                     }
